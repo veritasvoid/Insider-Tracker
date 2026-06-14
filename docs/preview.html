@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Insider Tracker · Jun 13 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════════════════
+   INSIDER TRACKER — Premium Dashboard
+   Design system: dark terminal + editorial glass
+═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Base */
+  --bg:        #03060f;
+  --surface:   rgba(6,12,30,0.80);
+  --surface2:  rgba(10,18,42,0.60);
+  --glass:     rgba(255,255,255,0.032);
+
+  /* Borders */
+  --bdr:       rgba(255,255,255,0.055);
+  --bdr2:      rgba(255,255,255,0.10);
+  --bdr3:      rgba(255,255,255,0.16);
+
+  /* Brand palette */
+  --teal:      #00e5c4;
+  --teal-dim:  rgba(0,229,196,0.12);
+  --blue:      #3b82f6;
+  --blue-dim:  rgba(59,130,246,0.12);
+  --amber:     #f59e0b;
+  --amber-dim: rgba(245,158,11,0.10);
+  --red:       #ef4444;
+  --red-dim:   rgba(239,68,68,0.10);
+  --purple:    #8b5cf6;
+
+  /* Semantic */
+  --up:        #10d9a8;
+  --dn:        #f05252;
+
+  /* Text */
+  --t1:  #edf2f9;
+  --t2:  #9eadc4;
+  --t3:  #556278;
+  --t4:  #2e3848;
+
+  /* Typography */
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Inter', system-ui, sans-serif;
+
+  /* Shadows */
+  --shadow-card: 0 1px 0 rgba(255,255,255,0.05) inset,
+                 0 24px 64px rgba(0,0,0,0.55),
+                 0  6px 24px rgba(0,0,0,0.35);
+  --shadow-sm:   0 4px 16px rgba(0,0,0,0.4);
+}
+
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0 }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased }
+body {
+  background: var(--bg);
+  color: var(--t1);
+  font-family: var(--sans);
+  font-size: 13.5px;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+a { color: var(--amber); text-decoration: none }
+a:hover { text-decoration: underline }
+b { font-weight: 600 }
+
+/* ── Background nebula ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 55% at 8% 25%,  rgba(59,130,246,0.09)  0%, transparent 60%),
+    radial-gradient(ellipse 55% 50% at 92% 12%,  rgba(0,229,196,0.06)   0%, transparent 60%),
+    radial-gradient(ellipse 45% 55% at 52% 100%, rgba(139,92,246,0.05)  0%, transparent 60%),
+    radial-gradient(ellipse 30% 40% at 75% 55%,  rgba(245,158,11,0.03)  0%, transparent 50%);
+}
+
+/* ── Top accent bar ── */
+.accent-bar {
+  position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 200;
+  background: linear-gradient(90deg, transparent 0%, var(--teal) 30%, var(--blue) 70%, transparent 100%);
+  opacity: 0.7;
+}
+
+.layout { position: relative; z-index: 1 }
+
+/* ═══════════════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════════════ */
+.hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px;
+  height: 62px;
+  background: rgba(3,6,15,0.92);
+  backdrop-filter: blur(32px) saturate(160%);
+  -webkit-backdrop-filter: blur(32px) saturate(160%);
+  border-bottom: 1px solid var(--bdr);
+  position: sticky; top: 0; z-index: 100;
+}
+
+/* Brand */
+.brand { display: flex; align-items: center; gap: 14px }
+.brand-mark {
+  width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0;
+  background: linear-gradient(135deg, rgba(0,229,196,0.15), rgba(59,130,246,0.12));
+  border: 1px solid rgba(0,229,196,0.28);
+  display: flex; align-items: center; justify-content: center;
+}
+.brand-mark svg { width: 16px; height: 16px }
+.brand-text {}
+.brand-name {
+  font-family: var(--mono); font-size: 13px; font-weight: 700;
+  letter-spacing: 3.5px; color: var(--t1); text-transform: uppercase;
+  line-height: 1;
+}
+.brand-sub {
+  font-size: 10px; color: var(--t3); letter-spacing: 1px; margin-top: 3px;
+  font-family: var(--mono); text-transform: uppercase;
+}
+
+/* Header center — market status */
+.hdr-center { display: flex; align-items: center; gap: 20px }
+.mkt-badge {
+  display: flex; align-items: center; gap: 7px;
+  padding: 5px 12px; border-radius: 20px;
+  background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 1.5px; color: #f87171; text-transform: uppercase;
+}
+.mkt-badge.open {
+  background: rgba(16,217,168,0.08); border-color: rgba(16,217,168,0.22);
+  color: var(--up);
+}
+.mkt-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: currentColor;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%,100% { opacity: 1 }
+  50%      { opacity: 0.35 }
+}
+
+/* Clock */
+.hdr-clock { text-align: right }
+.clock-t {
+  font-family: var(--mono); font-size: 15px; font-weight: 600;
+  color: var(--t1); letter-spacing: 0.5px; line-height: 1;
+}
+.clock-z {
+  font-family: var(--mono); font-size: 9.5px; color: var(--t3);
+  letter-spacing: 1.5px; text-transform: uppercase; margin-top: 4px;
+}
+
+/* ═══════════════════════════════════════════════════
+   NAV
+═══════════════════════════════════════════════════ */
+.nav {
+  display: flex; align-items: center;
+  padding: 0 48px;
+  height: 46px;
+  background: rgba(3,6,15,0.80);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--bdr);
+  gap: 4px;
+}
+.tab-btn {
+  font-family: var(--mono); font-size: 10.5px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  padding: 6px 16px; border-radius: 6px;
+  cursor: pointer; background: none; border: none;
+  color: var(--t3);
+  transition: color .15s, background .15s;
+  display: flex; align-items: center; gap: 8px;
+}
+.tab-btn:hover { color: var(--t2); background: var(--glass) }
+.tab-btn.active {
+  color: var(--amber);
+  background: rgba(245,158,11,0.08);
+  border: 1px solid rgba(245,158,11,0.18);
+}
+.tab-badge {
+  font-size: 9px; font-weight: 700;
+  background: rgba(245,158,11,0.15);
+  color: var(--amber);
+  padding: 1px 6px; border-radius: 10px;
+  line-height: 1.6;
+}
+.tab-btn.active .tab-badge { background: rgba(245,158,11,0.25) }
+
+/* Nav right slot */
+.nav-right {
+  margin-left: auto;
+  font-family: var(--mono); font-size: 10px; color: var(--t3);
+  letter-spacing: 0.5px;
+  display: flex; align-items: center; gap: 12px;
+}
+.nav-sep { color: var(--bdr2) }
+
+/* ═══════════════════════════════════════════════════
+   PANES
+═══════════════════════════════════════════════════ */
+.pane { display: none; padding: 32px 48px }
+.pane.active { display: block }
+
+/* ═══════════════════════════════════════════════════
+   HERO STATS
+═══════════════════════════════════════════════════ */
+.hero {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 12px; margin-bottom: 28px;
+}
+.hc {
+  background: var(--surface);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--bdr);
+  border-top: 1px solid var(--bdr2);
+  border-radius: 12px;
+  padding: 18px 22px;
+  box-shadow: var(--shadow-sm);
+  position: relative; overflow: hidden;
+}
+.hc::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+}
+.hc-icon {
+  font-size: 11px; color: var(--t3); margin-bottom: 12px;
+  font-family: var(--mono); letter-spacing: 1px; text-transform: uppercase;
+  display: flex; align-items: center; gap: 6px;
+}
+.hc-icon::before {
+  content: '';
+  width: 5px; height: 5px; border-radius: 50%; background: currentColor; opacity: 0.6;
+}
+.hc-v {
+  font-family: var(--mono); font-size: 32px; font-weight: 800;
+  color: var(--t1); line-height: 1; margin-bottom: 4px;
+  letter-spacing: -1px;
+}
+.hc-v.accent { color: var(--amber) }
+.hc-v.sm { font-size: 20px; letter-spacing: -0.5px }
+.hc-s { font-size: 11px; color: var(--t3) }
+
+/* ═══════════════════════════════════════════════════
+   SECTION DIVIDER
+═══════════════════════════════════════════════════ */
+.sec {
+  font-family: var(--mono); font-size: 9.5px; font-weight: 700;
+  letter-spacing: 2.5px; text-transform: uppercase; color: var(--t3);
+  margin-bottom: 18px;
+  display: flex; align-items: center; gap: 14px;
+}
+.sec::after { content: ''; flex: 1; height: 1px; background: var(--bdr) }
+
+/* ═══════════════════════════════════════════════════
+   PICK CARDS
+═══════════════════════════════════════════════════ */
+.picks { display: flex; flex-direction: column; gap: 16px }
+
+.card {
+  position: relative; border-radius: 14px; overflow: hidden;
+  background: var(--surface);
+  backdrop-filter: blur(32px) saturate(180%);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  border: 1px solid color-mix(in srgb, var(--ac) 16%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--ac) 36%, transparent);
+  box-shadow: var(--shadow-card);
+  transition: border-color .2s;
+}
+.card:hover {
+  border-color: color-mix(in srgb, var(--ac) 28%, transparent);
+}
+
+/* Left accent stripe */
+.card-stripe {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  background: linear-gradient(180deg,
+    var(--ac) 0%,
+    color-mix(in srgb, var(--ac) 30%, transparent) 100%);
+}
+
+/* Inner subtle glow */
+.card-glow {
+  position: absolute; top: 0; left: 3px; right: 0; height: 1px;
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--ac) 50%, transparent) 0%,
+    transparent 60%);
+}
+
+.card-body { padding: 22px 26px 20px 30px }
+
+/* ── Card header ── */
+.card-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 24px; margin-bottom: 18px;
+}
+
+.card-left { flex: 1; min-width: 0 }
+
+.card-rank {
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  color: var(--t3); letter-spacing: 1px; margin-bottom: 6px;
+  display: flex; align-items: center; gap: 8px;
+}
+.card-rank::after { content: ''; flex: 0; width: 28px; height: 1px; background: var(--bdr) }
+
+.card-ticker {
+  font-family: var(--mono); font-size: 40px; font-weight: 800;
+  line-height: 1; color: var(--t1); letter-spacing: -1.5px;
+  margin-bottom: 2px;
+}
+
+.card-co {
+  font-size: 12.5px; color: var(--t2); margin-bottom: 8px;
+  font-weight: 400;
+}
+
+/* Sector badge */
+.sector-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: var(--mono); font-size: 10.5px; font-weight: 600;
+  letter-spacing: 0.3px;
+  padding: 4px 11px; border-radius: 5px;
+  border: 1px solid; width: fit-content;
+  margin-bottom: 10px;
+}
+
+/* Meta row */
+.card-meta {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  font-size: 11.5px; color: var(--t2);
+}
+.meta-dot { color: var(--t4) }
+.sent {
+  font-family: var(--mono); font-size: 9.5px; font-weight: 700;
+  letter-spacing: 1px; padding: 2px 8px; border-radius: 4px;
+}
+.s-bull { color: var(--up);  background: rgba(16,217,168,0.09) }
+.s-bear { color: var(--dn);  background: rgba(240,82,82,0.09) }
+.s-neut { color: var(--t3);  background: rgba(85,98,120,0.12) }
+
+.cluster-tag {
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  color: var(--amber); background: rgba(245,158,11,0.09);
+  border: 1px solid rgba(245,158,11,0.22);
+  border-radius: 5px; padding: 2px 10px;
+  display: flex; align-items: center; gap: 5px;
+}
+.cluster-bolt { font-size: 11px }
+
+/* ── Score panel (right side of card-head) ── */
+.card-score-panel {
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  flex-shrink: 0;
+}
+
+/* Ring */
+.ring-outer {
+  position: relative; width: 96px; height: 96px; flex-shrink: 0;
+}
+.ring-track {
+  position: absolute; inset: 0; border-radius: 50%;
+  border: 9px solid rgba(255,255,255,0.07);
+}
+.ring-fill {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: conic-gradient(transparent 0deg, transparent 360deg);
+  -webkit-mask: radial-gradient(transparent 37px, black 38px);
+  mask:         radial-gradient(transparent 37px, black 38px);
+}
+.ring-text {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  pointer-events: none;
+}
+.ring-num {
+  font-family: var(--mono); font-size: 24px; font-weight: 800; line-height: 1;
+}
+.ring-den { font-family: var(--mono); font-size: 9px; color: var(--t3); margin-top: 1px }
+.ring-lbl {
+  font-family: var(--mono); font-size: 8px; font-weight: 800;
+  letter-spacing: 1.5px; margin-top: 4px;
+}
+
+/* Score breakdown bars */
+.breakdown {
+  width: 110px;
+}
+.bd-title {
+  font-family: var(--mono); font-size: 8.5px; font-weight: 700;
+  letter-spacing: 1.5px; color: var(--t3); text-transform: uppercase;
+  margin-bottom: 7px;
+}
+.bd-row {
+  display: flex; align-items: center; gap: 6px; margin-bottom: 5px;
+}
+.bd-lbl {
+  font-family: var(--mono); font-size: 8px; color: var(--t3);
+  width: 28px; flex-shrink: 0;
+}
+.bd-track {
+  flex: 1; height: 4px; border-radius: 2px;
+  background: rgba(255,255,255,0.06);
+  overflow: hidden;
+}
+.bd-fill {
+  height: 100%; border-radius: 2px;
+  background: var(--ac);
+  opacity: 0.75;
+  width: 0%; /* animated by JS */
+  transition: width 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.bd-val {
+  font-family: var(--mono); font-size: 8px; color: var(--t2);
+  width: 20px; text-align: right; flex-shrink: 0;
+}
+
+/* ── Price track ── */
+.card-prices {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 13px 0;
+  border-top: 1px solid var(--bdr);
+  border-bottom: 1px solid var(--bdr);
+  margin-bottom: 16px;
+}
+.price-block { display: flex; flex-direction: column; gap: 1px }
+.px-val {
+  font-family: var(--mono); font-size: 20px; font-weight: 700;
+  color: var(--t1); line-height: 1;
+}
+.px-lbl { font-size: 10px; color: var(--t3); font-family: var(--mono) }
+.px-arrow {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  flex: 1; padding: 0 4px;
+}
+.px-line {
+  width: 100%; height: 1px;
+  background: linear-gradient(90deg, var(--bdr2), var(--bdr2) 85%, transparent);
+}
+.px-chg {
+  font-family: var(--mono); font-size: 15px; font-weight: 700;
+  padding: 3px 12px; border-radius: 6px; flex-shrink: 0;
+}
+.px-chg.up   { color: var(--up); background: rgba(16,217,168,0.08) }
+.px-chg.down { color: var(--dn); background: rgba(240,82,82,0.08)  }
+.px-chg.flat { color: var(--t3); background: rgba(85,98,120,0.08)  }
+
+/* ── Metrics grid ── */
+.card-metrics {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 1px; margin-bottom: 16px;
+  background: var(--bdr);
+  border: 1px solid var(--bdr); border-radius: 10px; overflow: hidden;
+}
+.m {
+  padding: 10px 14px; background: var(--bg);
+}
+.m.neg { background: rgba(240,82,82,0.03) }
+.mv {
+  display: block; font-family: var(--mono); font-size: 13.5px;
+  font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1;
+  margin-bottom: 3px;
+}
+.mk {
+  display: block; font-size: 9.5px; color: var(--t3);
+  letter-spacing: 0.2px;
+}
+
+/* ── News ── */
+.card-news { margin-bottom: 14px }
+.news-hl {
+  font-family: var(--sans); font-style: italic; font-size: 13.5px;
+  font-weight: 500; color: #cdd8ec; line-height: 1.65;
+  margin-bottom: 7px;
+  border-left: 2.5px solid color-mix(in srgb, var(--ac) 55%, transparent);
+  padding-left: 12px;
+}
+.news-body {
+  font-size: 12px; color: var(--t2); line-height: 1.8; padding-left: 14px;
+}
+.news-srcs { display: flex; gap: 6px; margin-top: 8px; padding-left: 14px }
+.src-a {
+  font-family: var(--mono); font-size: 9.5px; color: var(--t3);
+  padding: 3px 9px; border: 1px solid var(--bdr); border-radius: 4px;
+  display: flex; align-items: center; gap: 4px;
+}
+.src-a:hover { color: var(--amber); border-color: rgba(245,158,11,0.35); text-decoration: none }
+
+/* ── Catalysts ── */
+.card-cats {
+  background: rgba(255,255,255,0.018);
+  border: 1px solid var(--bdr); border-radius: 9px;
+  padding: 12px 14px; margin-bottom: 11px;
+}
+.cats-label {
+  font-family: var(--mono); font-size: 8.5px; font-weight: 700;
+  letter-spacing: 2px; color: var(--t3); text-transform: uppercase;
+  margin-bottom: 9px;
+}
+.cats-grid { display: flex; flex-direction: column; gap: 6px }
+.cat-pill {
+  display: flex; align-items: flex-start; gap: 9px;
+  padding: 8px 12px; border-radius: 7px; border: 1px solid;
+  font-size: 11.5px; font-weight: 500; line-height: 1.5;
+}
+.cat-bullet {
+  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 4px;
+}
+.no-cats { font-size: 11.5px; color: var(--t3); font-style: italic }
+
+/* ── Risk ── */
+.card-risk {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: rgba(239,68,68,0.04);
+  border: 1px solid rgba(239,68,68,0.16);
+  border-radius: 8px; padding: 9px 13px;
+}
+.risk-icon {
+  font-size: 12px; flex-shrink: 0; margin-top: 1px;
+  opacity: 0.8;
+}
+.risk-body { font-size: 11.5px; color: #fca5a5; line-height: 1.7 }
+
+/* ═══════════════════════════════════════════════════
+   HISTORY
+═══════════════════════════════════════════════════ */
+.hgroup { margin-bottom: 24px }
+.hg-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 8px; padding: 0 2px;
+}
+.hg-date { font-family: var(--mono); font-size: 11.5px; font-weight: 700; color: var(--t1) }
+.hg-cnt  { font-family: var(--mono); font-size: 10px; color: var(--t3) }
+
+.hrow {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  background: var(--surface2);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--bdr); border-left: 3px solid;
+  border-radius: 9px; padding: 11px 15px; margin-bottom: 5px;
+  transition: background .15s;
+}
+.hrow:hover { background: rgba(10,18,50,0.75) }
+.hrl-l { display: flex; align-items: center; gap: 10px; min-width: 220px }
+.htk { font-family: var(--mono); font-size: 18px; font-weight: 800; min-width: 52px }
+.hsi { font-family: var(--mono); font-size: 9.5px; font-weight: 700; letter-spacing: 1px }
+.hsc { font-family: var(--mono); font-size: 11px; color: var(--t3) }
+.hcl {
+  font-family: var(--mono); font-size: 9.5px; color: var(--amber);
+  background: rgba(245,158,11,0.08); padding: 2px 7px; border-radius: 4px;
+}
+.hrl-p {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--mono); font-size: 11.5px; color: var(--t3);
+}
+.hp-a { opacity: 0.3 }
+.hrl-r { display: flex; gap: 16px; margin-left: auto; flex-wrap: wrap }
+.hr { display: flex; flex-direction: column; align-items: center; gap: 2px }
+.hr span { font-family: var(--mono); font-size: 11.5px; font-weight: 700 }
+.hrl { font-size: 9.5px; color: var(--t3); letter-spacing: 0.5px }
+
+/* ═══════════════════════════════════════════════════
+   PERFORMANCE
+═══════════════════════════════════════════════════ */
+.pstats { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px }
+.pst {
+  background: var(--surface2); backdrop-filter: blur(12px);
+  border: 1px solid var(--bdr); border-radius: 10px;
+  padding: 13px 17px; min-width: 100px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+}
+.pst-l { font-family: var(--mono); font-size: 9.5px; color: var(--t3); letter-spacing: 1px; text-transform: uppercase }
+.pst-v { font-family: var(--mono); font-size: 21px; font-weight: 800; margin: 4px 0 2px; line-height: 1 }
+.pst-s { font-size: 10.5px; color: var(--t3) }
+
+.ptw { overflow-x: auto; border-radius: 11px; border: 1px solid var(--bdr) }
+.ptbl { width: 100%; border-collapse: collapse; font-size: 12.5px }
+.ptbl th {
+  text-align: left; padding: 10px 13px;
+  font-family: var(--mono); font-size: 8.5px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase; color: var(--t3);
+  background: rgba(255,255,255,0.018); border-bottom: 1px solid var(--bdr);
+  white-space: nowrap;
+}
+.ptbl td { padding: 10px 13px; border-bottom: 1px solid rgba(255,255,255,0.025) }
+.ptbl tr:last-child td { border-bottom: none }
+.ptbl tr:hover td { background: rgba(255,255,255,0.018) }
+.td-m { font-family: var(--mono); font-size: 11.5px; color: var(--t3) }
+.tcl  { font-family: var(--mono); font-size: 9.5px; color: var(--amber) }
+
+/* ═══════════════════════════════════════════════════
+   EMPTY STATE
+═══════════════════════════════════════════════════ */
+.empty {
+  text-align: center; color: var(--t3); padding: 52px 24px;
+  border: 1px dashed var(--bdr); border-radius: 12px; font-size: 12.5px;
+}
+
+/* ═══════════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════════ */
+footer {
+  border-top: 1px solid var(--bdr); padding: 16px 48px;
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: var(--mono); font-size: 9.5px; color: var(--t3);
+  letter-spacing: 0.5px;
+}
+.footer-disclaimer { display: flex; align-items: center; gap: 8px }
+.footer-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--t4) }
+
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════ */
+@media (max-width: 1100px) {
+  .hero { grid-template-columns: repeat(2, 1fr) }
+}
+@media (max-width: 760px) {
+  .hdr, .nav, .pane { padding-left: 18px; padding-right: 18px }
+  footer { padding-left: 18px; padding-right: 18px }
+  .hero { grid-template-columns: 1fr 1fr; gap: 8px }
+  .hc-v { font-size: 26px }
+  .card-head { flex-direction: column }
+  .card-score-panel { flex-direction: row; width: 100% }
+  .breakdown { flex: 1 }
+  .card-metrics { grid-template-columns: repeat(2, 1fr) }
+  .hdr-center { display: none }
+  .hrl-r { display: none }
+}
+</style>
+</head>
+<body>
+<div class="accent-bar"></div>
+<div class="layout">
+
+<!-- ═══ HEADER ═══ -->
+<header class="hdr">
+  <div class="brand">
+    <div class="brand-mark">
+      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 12L6 7L9 9.5L12 4" stroke="#00e5c4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="12" cy="4" r="1.5" fill="#3b82f6"/>
+        <circle cx="3"  cy="12" r="1"  fill="#00e5c4" opacity="0.5"/>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <div class="brand-name">Insider Tracker</div>
+      <div class="brand-sub">CEO · CFO · Open Market Buys · Min $100K</div>
+    </div>
+  </div>
+
+  <div class="hdr-center">
+    <div class="mkt-badge" id="mkt-status">
+      <span class="mkt-dot"></span>
+      <span id="mkt-label">MARKET CLOSED</span>
+    </div>
+  </div>
+
+  <div class="hdr-clock">
+    <div class="clock-t" id="az-clock">Sat, Jun 13  22:19:49</div>
+    <div class="clock-z">Arizona Time · MST · UTC−7</div>
+  </div>
+</header>
+
+<!-- ═══ NAV ═══ -->
+<nav class="nav">
+  <button class="tab-btn active" data-tab="t-today">
+    Today's Picks
+    <span class="tab-badge">4</span>
+  </button>
+  <button class="tab-btn" data-tab="t-history">History</button>
+  <button class="tab-btn" data-tab="t-perf">Performance</button>
+
+  <div class="nav-right">
+    <span>Jun 13 2026</span>
+    <span class="nav-sep">·</span>
+    <span>Pipeline run 22:19 MST</span>
+  </div>
+</nav>
+
+<main>
+
+<!-- ═══════════════════════════════════════════════════
+     TODAY'S PICKS
+═══════════════════════════════════════════════════ -->
+<div id="t-today" class="pane active">
+
+  <!-- Hero stats -->
+  <div class="hero">
+    <div class="hc">
+      <div class="hc-icon">Today's Picks</div>
+      <div class="hc-v accent">4</div>
+      <div class="hc-s">Unique tickers</div>
+    </div>
+    <div class="hc">
+      <div class="hc-icon">Cluster Signals</div>
+      <div class="hc-v accent">1</div>
+      <div class="hc-s">Multi-insider buys</div>
+    </div>
+    <div class="hc">
+      <div class="hc-icon">Top Pick</div>
+      <div class="hc-v sm accent">SMMT&nbsp;·&nbsp;70</div>
+      <div class="hc-s">BUY — Summit Therapeutics</div>
+    </div>
+    <div class="hc">
+      <div class="hc-icon">Tracked Positions</div>
+      <div class="hc-v accent">4</div>
+      <div class="hc-s">In performance log</div>
+    </div>
+  </div>
+
+  <div class="sec">June 13, 2026 · Scored Picks</div>
+
+  <div class="picks">
+
+    <!-- ══════════════════════════════ CARD 1: SMMT ══════════════════════════════ -->
+    <article class="card" style="--ac:#3b82f6">
+      <div class="card-stripe"></div>
+      <div class="card-glow"></div>
+      <div class="card-body">
+
+        <div class="card-head">
+          <div class="card-left">
+            <div class="card-rank">#1 of 4</div>
+            <div class="card-ticker">SMMT</div>
+            <div class="card-co">Summit Therapeutics Inc.</div>
+            <div class="sector-tag" style="color:#c4b5fd;background:rgba(139,92,246,0.10);border-color:rgba(139,92,246,0.28)">
+              Biotechnology
+            </div>
+            <div class="card-meta">
+              <span>Co-CEO</span>
+              <span class="meta-dot">·</span>
+              <span>Trade 2026-06-12</span>
+              <span class="meta-dot">·</span>
+              <span class="sent s-bull">BULLISH</span>
+              <span class="cluster-tag"><span class="cluster-bolt">⚡</span>CLUSTER · 2 insiders</span>
+            </div>
+          </div>
+
+          <div class="card-score-panel">
+            <div class="ring-outer" data-score="70" data-color="#3b82f6">
+              <div class="ring-track"></div>
+              <div class="ring-fill"></div>
+              <div class="ring-text">
+                <span class="ring-num" style="color:#3b82f6">70</span>
+                <span class="ring-den">/100</span>
+                <span class="ring-lbl" style="color:#3b82f6">BUY</span>
+              </div>
+            </div>
+            <div class="breakdown" data-fills='[68,80,60,60,83,69,50]' data-maxes='[25,20,10,10,12,13,10]'>
+              <div class="bd-title">Score Breakdown</div>
+              <div class="bd-row"><span class="bd-lbl">D1</span><div class="bd-track"><div class="bd-fill"></div></div><span class="bd-val">17/25</span></div>
+              <div class="bd-row"><span class="bd-lbl">D2</span><div class="bd-track"><div class="bd-fill"></div></div><span class="bd-val">16/20</span></div>
+              <div class="bd-row"><span class="bd-lbl">D3</span><div class="bd-track"><div class="bd-fill"></div></div><span class="bd-val">6/10</span></div>
+              <div class="bd-row"><span class="bd-lbl">D4</span><div class="bd-track"><div class="bd-fill"></div></div><span class="bd-val">6/10</span></div>
+              <div class="bd-row"><span class="bd-lbl">D5</span><div class="bd-track"><div class="bd-fill"></div></div><span class="bd-val">10/12</span></div>
+              <div class="bd-row"><span class="bd-lbl">D6</span><div class="bd-track"><div class="bd-fill"></div></div><span class="bd-val">9/13</span></div>
+              <div class="bd-row"><span class="bd-lbl">D7</span><div class="bd-track"><div class="bd-fill"></div></div><span class="bd-val">5/10</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Prices -->
+        <div class="card-prices">
+          <div class="price-block">
+            <span class="px-val">$13.12</span>
+            <span class="px-lbl">Insider buy</span>
+          </div>
+          <div class="px-arrow"><div class="px-line"></div></div>
+          <div class="price-block">
+            <span class="px-val">$15.07</span>
+            <span class="px-lbl">Now</span>
+          </div>
+          <span class="px-chg up">▲ 14.9%</span>
+        </div>
+
+        <!-- Metrics -->
+        <div class="card-metrics">
+          <div class="m neg"><span class="mv" style="color:var(--dn)">−16.1%</span><span class="mk">vs EMA50</span></div>
+          <div class="m neg"><span class="mv" style="color:var(--dn)">−18.9%</span><span class="mk">vs EMA200</span></div>
+          <div class="m neg"><span class="mv" style="color:var(--dn)">−13.2%</span><span class="mk">5d Velocity</span></div>
+          <div class="m"><span class="mv" style="color:var(--t1)">26.9%</span><span class="mk">Short Float</span></div>
+          <div class="m"><span class="mv" style="color:var(--t1)">$50.0M</span><span class="mk">Total Bought</span></div>
+          <div class="m"><span class="mv" style="color:var(--up)">+1%</span><span class="mk">Δ Ownership</span></div>
+        </div>
+
+        <!-- News -->
+        <div class="card-news">
+          <blockquote class="news-hl">"Summit Therapeutics Co-CEO Buys Nearly $50 Million in Stock Following Withdrawn Public Offering"</blockquote>
+          <p class="news-body">Summit Therapeutics' Co-CEO Robert Duggan purchased 3.81 million shares for ~$49.9M at $13.12/share, signaling strong executive confidence as the stock traded near its 52-week low. Positive Phase 3 data for ivonescimab in NSCLC and an upcoming FDA decision are driving analyst optimism.</p>
+          <div class="news-srcs">
+            <a href="https://www.reuters.com" target="_blank" class="src-a">↗ Reuters</a>
+            <a href="https://www.biocentury.com" target="_blank" class="src-a">↗ BioCentury</a>
+          </div>
+        </div>
+
+        <!-- Catalysts -->
+        <div class="card-cats">
+          <div class="cats-label">Upcoming Catalysts</div>
+          <div class="cats-grid">
+            <div class="cat-pill" style="color:#00e5c4;background:rgba(0,229,196,0.08);border-color:rgba(0,229,196,0.28)">
+              <span class="cat-bullet" style="background:#00e5c4"></span>
+              FDA PDUFA date for ivonescimab in EGFR-mutated NSCLC: November 2026
+            </div>
+            <div class="cat-pill" style="color:#60a5fa;background:rgba(96,165,250,0.08);border-color:rgba(96,165,250,0.28)">
+              <span class="cat-bullet" style="background:#60a5fa"></span>
+              Q2 earnings report ~August 10, 2026
+            </div>
+            <div class="cat-pill" style="color:#00e5c4;background:rgba(0,229,196,0.08);border-color:rgba(0,229,196,0.28)">
+              <span class="cat-bullet" style="background:#00e5c4"></span>
+              Phase 3 global trial data readouts (ongoing)
+            </div>
+          </div>
+        </div>
+
+        <!-- Risk -->
+        <div class="card-risk">
+          <span class="risk-icon">⚠</span>
+          <span class="risk-body">High short float (26.9%) and negative momentum (−16% vs EMA50) create downside volatility risk; regulatory failure at November PDUFA would trigger sharp selloff.</span>
+        </div>
+
+      </div>
+    </article>
+
+    <!-- ══════════════════════════════ CARD 2: NRDY ══════════════════════════════ -->
+    <article class="card" style="--ac:#f59e0b">
+      <div class="card-stripe"></div>
+      <div class="card-glow"></div>
+      <div class="card-body">
+
+        <div class="card-head">
+          <div class="card-left">
+            <div class="card-rank">#2 of 4</div>
+            <div class="card-ticker">NRDY</div>
+            <div class="card-co">Nerdy Inc.</div>
+            <div class="sector-tag" style="color:#86efac;background:rgba(134,239,172,0.08);border-color:rgba(134,239,172,0.25)">
+              Education
+            </div>
+            <div class="card-meta">
+              <span>CEO</span>
+              <span class="meta-dot">·</span>
+              <span>Trade 2026-06-11</span>
+              <span class="meta-dot">·</span>
+              <span class="sent s-neut">NEUTRAL</span>
+            </div>
+          </div>
+
+          <div class="card-score-panel">
+            <div class="ring-outer" data-score="50" data-color="#f59e0b">
+              <div class="ring-track"></div>
+              <div class="ring-fill"></div>
+              <div class="ring-text">
+                <span class="ring-num" style="color:#f59e0b">50</span>
+                <span class="ring-den">/100</span>
+                <span class="ring-lbl" style="color:#f59e0b">WATCH</span>
+              </div>
+            </div>
+            <div class="breakdown">
+              <div class="bd-title">Score Breakdown</div>
+              <div class="bd-row"><span class="bd-lbl">D1</span><div class="bd-track"><div class="bd-fill" style="width:32%"></div></div><span class="bd-val">8/25</span></div>
+              <div class="bd-row"><span class="bd-lbl">D2</span><div class="bd-track"><div class="bd-fill" style="width:50%"></div></div><span class="bd-val">10/20</span></div>
+              <div class="bd-row"><span class="bd-lbl">D3</span><div class="bd-track"><div class="bd-fill" style="width:50%"></div></div><span class="bd-val">5/10</span></div>
+              <div class="bd-row"><span class="bd-lbl">D4</span><div class="bd-track"><div class="bd-fill" style="width:0%"></div></div><span class="bd-val">0/10</span></div>
+              <div class="bd-row"><span class="bd-lbl">D5</span><div class="bd-track"><div class="bd-fill" style="width:58%"></div></div><span class="bd-val">7/12</span></div>
+              <div class="bd-row"><span class="bd-lbl">D6</span><div class="bd-track"><div class="bd-fill" style="width:46%"></div></div><span class="bd-val">6/13</span></div>
+              <div class="bd-row"><span class="bd-lbl">D7</span><div class="bd-track"><div class="bd-fill" style="width:40%"></div></div><span class="bd-val">4/10</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-prices">
+          <div class="price-block">
+            <span class="px-val">$0.97</span>
+            <span class="px-lbl">Insider buy</span>
+          </div>
+          <div class="px-arrow"><div class="px-line"></div></div>
+          <div class="price-block">
+            <span class="px-val">$0.78</span>
+            <span class="px-lbl">Now</span>
+          </div>
+          <span class="px-chg down">▼ 19.6%</span>
+        </div>
+
+        <div class="card-metrics">
+          <div class="m neg"><span class="mv" style="color:var(--dn)">−9.1%</span><span class="mk">vs EMA50</span></div>
+          <div class="m neg"><span class="mv" style="color:var(--dn)">−25.2%</span><span class="mk">vs EMA200</span></div>
+          <div class="m neg"><span class="mv" style="color:var(--dn)">−5.6%</span><span class="mk">5d Velocity</span></div>
+          <div class="m"><span class="mv" style="color:var(--t1)">17.1%</span><span class="mk">Short Float</span></div>
+          <div class="m"><span class="mv" style="color:var(--t1)">$250K</span><span class="mk">Total Bought</span></div>
+          <div class="m"><span class="mv" style="color:var(--t2)">0%</span><span class="mk">Δ Ownership</span></div>
+        </div>
+
+        <div class="card-news">
+          <blockquote class="news-hl">"Nerdy CEO Charles Cohn Acquires Over $250K in Company Shares Amid NYSE Compliance Notice"</blockquote>
+          <p class="news-body">Nerdy Inc.'s CEO purchased 258,204 shares worth $250,457 at $0.97, signaling confidence in the turnaround. Q1 2026 exceeded revenue expectations with positive Adjusted EBITDA, yet the stock remains below $1.00 triggering an NYSE non-compliance notice.</p>
+          <div class="news-srcs">
+            <a href="https://finance.yahoo.com" target="_blank" class="src-a">↗ Yahoo Finance</a>
+          </div>
+        </div>
+
+        <div class="card-cats">
+          <div class="cats-label">Upcoming Catalysts</div>
+          <div class="cats-grid">
+            <div class="cat-pill" style="color:#60a5fa;background:rgba(96,165,250,0.08);border-color:rgba(96,165,250,0.28)">
+              <span class="cat-bullet" style="background:#60a5fa"></span>
+              Q2 2026 earnings report ~August 6 (guidance: $42–$44M revenue)
+            </div>
+            <div class="cat-pill" style="color:#f87171;background:rgba(248,113,113,0.08);border-color:rgba(248,113,113,0.28)">
+              <span class="cat-bullet" style="background:#f87171"></span>
+              NYSE non-compliance cure period — possible reverse split
+            </div>
+          </div>
+        </div>
+
+        <div class="card-risk">
+          <span class="risk-icon">⚠</span>
+          <span class="risk-body">−25% vs EMA200, 17.1% short float, 0% ownership change; NYSE non-compliance notice for sub-$1.00 price adds delisting risk.</span>
+        </div>
+
+      </div>
+    </article>
+
+    <!-- ══════════════════════════════ CARD 3: GOTU ══════════════════════════════ -->
+    <article class="card" style="--ac:#f59e0b">
+      <div class="card-stripe"></div>
+      <div class="card-glow"></div>
+      <div class="card-body">
+
+        <div class="card-head">
+          <div class="card-left">
+            <div class="card-rank">#3 of 4</div>
+            <div class="card-ticker">GOTU</div>
+            <div class="card-co">Gaotu Techedu Inc.</div>
+            <div class="sector-tag" style="color:#86efac;background:rgba(134,239,172,0.08);border-color:rgba(134,239,172,0.25)">
+              Education
+            </div>
+            <div class="card-meta">
+              <span>CEO</span>
+              <span class="meta-dot">·</span>
+              <span>Trade 2026-06-11</span>
+              <span class="meta-dot">·</span>
+              <span class="sent s-neut">NEUTRAL</span>
+            </div>
+          </div>
+
+          <div class="card-score-panel">
+            <div class="ring-outer" data-score="41" data-color="#f59e0b">
+              <div class="ring-track"></div>
+              <div class="ring-fill"></div>
+              <div class="ring-text">
+                <span class="ring-num" style="color:#f59e0b">41</span>
+                <span class="ring-den">/100</span>
+                <span class="ring-lbl" style="color:#f59e0b">WATCH</span>
+              </div>
+            </div>
+            <div class="breakdown">
+              <div class="bd-title">Score Breakdown</div>
+              <div class="bd-row"><span class="bd-lbl">D1</span><div class="bd-track"><div class="bd-fill" style="width:28%"></div></div><span class="bd-val">7/25</span></div>
+              <div class="bd-row"><span class="bd-lbl">D2</span><div class="bd-track"><div class="bd-fill" style="width:55%"></div></div><span class="bd-val">11/20</span></div>
+              <div class="bd-row"><span class="bd-lbl">D3</span><div class="bd-track"><div class="bd-fill" style="width:20%"></div></div><span class="bd-val">2/10</span></div>
+              <div class="bd-row"><span class="bd-lbl">D4</span><div class="bd-track"><div class="bd-fill" style="width:0%"></div></div><span class="bd-val">0/10</span></div>
+              <div class="bd-row"><span class="bd-lbl">D5</span><div class="bd-track"><div class="bd-fill" style="width:42%"></div></div><span class="bd-val">5/12</span></div>
+              <div class="bd-row"><span class="bd-lbl">D6</span><div class="bd-track"><div class="bd-fill" style="width:38%"></div></div><span class="bd-val">5/13</span></div>
+              <div class="bd-row"><span class="bd-lbl">D7</span><div class="bd-track"><div class="bd-fill" style="width:110%"></div></div><span class="bd-val">11/10</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-prices">
+          <div class="price-block">
+            <span class="px-val">$2.24</span>
+            <span class="px-lbl">Insider buy</span>
+          </div>
+          <div class="px-arrow"><div class="px-line"></div></div>
+          <div class="price-block">
+            <span class="px-val">$1.67</span>
+            <span class="px-lbl">Now</span>
+          </div>
+          <span class="px-chg down">▼ 25.4%</span>
+        </div>
+
+        <div class="card-metrics">
+          <div class="m neg"><span class="mv" style="color:var(--dn)">−12.9%</span><span class="mk">vs EMA50</span></div>
+          <div class="m neg"><span class="mv" style="color:var(--dn)">−33.5%</span><span class="mk">vs EMA200</span></div>
+          <div class="m neg"><span class="mv" style="color:var(--dn)">−5.1%</span><span class="mk">5d Velocity</span></div>
+          <div class="m"><span class="mv" style="color:var(--t1)">1.7%</span><span class="mk">Short Float</span></div>
+          <div class="m"><span class="mv" style="color:var(--t1)">$447K</span><span class="mk">Total Bought</span></div>
+          <div class="m"><span class="mv" style="color:var(--up)">+3%</span><span class="mk">Δ Ownership</span></div>
+        </div>
+
+        <div class="card-news">
+          <blockquote class="news-hl">"Gaotu Techedu CEO Buys $447K in Company Stock Following Analyst Downgrade"</blockquote>
+          <p class="news-body">Gaotu's CEO purchased 200,000 shares for ~$447K despite mixed Q1 results. Revenue grew 13.2% YoY but operating income dropped significantly. One analyst downgraded to 'Hold' citing profitability concerns.</p>
+          <div class="news-srcs">
+            <a href="https://seekingalpha.com" target="_blank" class="src-a">↗ Seeking Alpha</a>
+          </div>
+        </div>
+
+        <div class="card-cats">
+          <div class="cats-label">Upcoming Catalysts</div>
+          <div class="cats-grid">
+            <div class="cat-pill" style="color:#60a5fa;background:rgba(96,165,250,0.08);border-color:rgba(96,165,250,0.28)">
+              <span class="cat-bullet" style="background:#60a5fa"></span>
+              Q2 2026 earnings report ~August 25, 2026
+            </div>
+          </div>
+        </div>
+
+        <div class="card-risk">
+          <span class="risk-icon">⚠</span>
+          <span class="risk-body">Widening operating cash outflow and collapsing profitability despite revenue growth suggest structural margin compression.</span>
+        </div>
+
+      </div>
+    </article>
+
+    <!-- ══════════════════════════════ CARD 4: BSBR ══════════════════════════════ -->
+    <article class="card" style="--ac:#f59e0b">
+      <div class="card-stripe"></div>
+      <div class="card-glow"></div>
+      <div class="card-body">
+
+        <div class="card-head">
+          <div class="card-left">
+            <div class="card-rank">#4 of 4</div>
+            <div class="card-ticker">BSBR</div>
+            <div class="card-co">Banco Santander (Brasil) S.A.</div>
+            <div class="sector-tag" style="color:#6ee7b7;background:rgba(110,231,183,0.08);border-color:rgba(110,231,183,0.24)">
+              Financial
+            </div>
+            <div class="card-meta">
+              <span>CEO</span>
+              <span class="meta-dot">·</span>
+              <span>Trade 2026-06-11</span>
+              <span class="meta-dot">·</span>
+              <span class="sent s-neut">NEUTRAL</span>
+            </div>
+          </div>
+
+          <div class="card-score-panel">
+            <div class="ring-outer" data-score="40" data-color="#f59e0b">
+              <div class="ring-track"></div>
+              <div class="ring-fill"></div>
+              <div class="ring-text">
+                <span class="ring-num" style="color:#f59e0b">40</span>
+                <span class="ring-den">/100</span>
+                <span class="ring-lbl" style="color:#f59e0b">WATCH</span>
+              </div>
+            </div>
+            <div class="breakdown">
+              <div class="bd-title">Score Breakdown</div>
+              <div class="bd-row"><span class="bd-lbl">D1</span><div class="bd-track"><div class="bd-fill" style="width:52%"></div></div><span class="bd-val">13/25</span></div>
+              <div class="bd-row"><span class="bd-lbl">D2</span><div class="bd-track"><div class="bd-fill" style="width:35%"></div></div><span class="bd-val">7/20</span></div>
+              <div class="bd-row"><span class="bd-lbl">D3</span><div class="bd-track"><div class="bd-fill" style="width:20%"></div></div><span class="bd-val">2/10</span></div>
+              <div class="bd-row"><span class="bd-lbl">D4</span><div class="bd-track"><div class="bd-fill" style="width:0%"></div></div><span class="bd-val">0/10</span></div>
+              <div class="bd-row"><span class="bd-lbl">D5</span><div class="bd-track"><div class="bd-fill" style="width:50%"></div></div><span class="bd-val">6/12</span></div>
+              <div class="bd-row"><span class="bd-lbl">D6</span><div class="bd-track"><div class="bd-fill" style="width:46%"></div></div><span class="bd-val">6/13</span></div>
+              <div class="bd-row"><span class="bd-lbl">D7</span><div class="bd-track"><div class="bd-fill" style="width:60%"></div></div><span class="bd-val">6/10</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-prices">
+          <div class="price-block">
+            <span class="px-val">$5.20</span>
+            <span class="px-lbl">Insider buy</span>
+          </div>
+          <div class="px-arrow"><div class="px-line"></div></div>
+          <div class="price-block">
+            <span class="px-val">$5.30</span>
+            <span class="px-lbl">Now</span>
+          </div>
+          <span class="px-chg up">▲ 1.9%</span>
+        </div>
+
+        <div class="card-metrics">
+          <div class="m neg"><span class="mv" style="color:var(--dn)">−8.0%</span><span class="mk">vs EMA50</span></div>
+          <div class="m neg"><span class="mv" style="color:var(--dn)">−10.5%</span><span class="mk">vs EMA200</span></div>
+          <div class="m neg"><span class="mv" style="color:var(--dn)">−3.1%</span><span class="mk">5d Velocity</span></div>
+          <div class="m"><span class="mv" style="color:var(--t1)">0.1%</span><span class="mk">Short Float</span></div>
+          <div class="m"><span class="mv" style="color:var(--t1)">$772K</span><span class="mk">Total Bought</span></div>
+          <div class="m"><span class="mv" style="color:var(--up)">+29%</span><span class="mk">Δ Ownership</span></div>
+        </div>
+
+        <div class="card-news">
+          <blockquote class="news-hl">"Santander Brasil CEO Engages in Offsetting Stock Transactions Amidst Governance Focus"</blockquote>
+          <p class="news-body">CEO executed offsetting buy/sell transactions suggesting repositioning, not conviction. EGM on July 2 to address board composition and planned merger of loyalty subsidiary Esfera are the main near-term catalysts.</p>
+          <div class="news-srcs">
+            <a href="https://www.reuters.com" target="_blank" class="src-a">↗ Reuters</a>
+          </div>
+        </div>
+
+        <div class="card-cats">
+          <div class="cats-label">Upcoming Catalysts</div>
+          <div class="cats-grid">
+            <div class="cat-pill" style="color:#fcd34d;background:rgba(252,211,77,0.08);border-color:rgba(252,211,77,0.28)">
+              <span class="cat-bullet" style="background:#fcd34d"></span>
+              Extraordinary General Meeting (EGM) July 2, 2026
+            </div>
+            <div class="cat-pill" style="color:#60a5fa;background:rgba(96,165,250,0.08);border-color:rgba(96,165,250,0.28)">
+              <span class="cat-bullet" style="background:#60a5fa"></span>
+              Q2 earnings release ~July 29, 2026
+            </div>
+            <div class="cat-pill" style="color:#fcd34d;background:rgba(252,211,77,0.08);border-color:rgba(252,211,77,0.28)">
+              <span class="cat-bullet" style="background:#fcd34d"></span>
+              Planned merger of loyalty subsidiary Esfera
+            </div>
+          </div>
+        </div>
+
+        <div class="card-risk">
+          <span class="risk-icon">⚠</span>
+          <span class="risk-body">CEO's offsetting buy-sell transaction signals low conviction; analyst 'Reduce' ratings and weak technicals suggest the buy is defensive rather than opportunistic.</span>
+        </div>
+
+      </div>
+    </article>
+
+  </div><!-- /picks -->
+</div><!-- /t-today -->
+
+<!-- ═══════════════════════════════════════════════════
+     HISTORY
+═══════════════════════════════════════════════════ -->
+<div id="t-history" class="pane">
+  <div class="sec">All Picks · Most Recent First</div>
+
+  <div class="hgroup">
+    <div class="hg-hdr">
+      <span class="hg-date">Saturday, June 13 2026</span>
+      <span class="hg-cnt">4 picks</span>
+    </div>
+
+    <div class="hrow" style="border-left-color:#3b82f6">
+      <div class="hrl-l">
+        <span class="htk" style="color:#3b82f6">SMMT</span>
+        <span class="hsi" style="color:#3b82f6">BUY</span>
+        <span class="hsc">70</span>
+        <span class="hcl">⚡ CLUSTER</span>
+      </div>
+      <div class="hrl-p">
+        <span>Buy $13.12</span><span class="hp-a">→</span><span>Pick $15.07</span>
+      </div>
+      <div class="hrl-r">
+        <div class="hr"><span style="color:var(--t3)">—</span><span class="hrl">3d</span></div>
+        <div class="hr"><span style="color:var(--t3)">—</span><span class="hrl">8d</span></div>
+        <div class="hr"><span style="color:var(--t3)">—</span><span class="hrl">15d</span></div>
+        <div class="hr"><span style="color:var(--t3)">—</span><span class="hrl">30d</span></div>
+        <div class="hr"><span style="color:var(--t3)">—</span><span class="hrl">90d</span></div>
+      </div>
+    </div>
+
+    <div class="hrow" style="border-left-color:#f59e0b">
+      <div class="hrl-l">
+        <span class="htk" style="color:#f59e0b">NRDY</span>
+        <span class="hsi" style="color:#f59e0b">WATCH</span>
+        <span class="hsc">50</span>
+      </div>
+      <div class="hrl-p">
+        <span>Buy $0.97</span><span class="hp-a">→</span><span>Pick $0.78</span>
+      </div>
+      <div class="hrl-r">
+        <div class="hr"><span style="color:var(--t3)">—</span><span class="hrl">3d</span></div>
+        <div class="hr"><span style="color:var(--t3)">—</span><span class="hrl">8d</span></div>
+        <div class="hr"><span style="color:var(--t3)">—</span><span class="hrl">15d</span></div>
+        <div class="hr"><span style="color:var(--t3)">—</span><span class="hrl">30d</span></div>
+        <div class="hr"><span style="color:var(--t3)">—</span><span class="hrl">90d</span></div>
+      </div>
+    </div>
+
+    <div class="hrow" style="border-left-color:#f59e0b">
+      <div class="hrl-l">
+        <span class="htk" style="color:#f59e0b">GOTU</span>
+        <span class="hsi" style="color:#f59e0b">WATCH</span>
+        <span class="hsc">41</span>
+      </div>
+      <div class="hrl-p">
+        <span>Buy $2.24</span><span class="hp-a">→</span><span>Pick $1.67</span>
+      </div>
+      <div class="hrl-r">
+        <div class="hr"><span style="color:var(--t3)">—</span><span class="hrl">3d</span></div>
+        <div class="hr"><span style="color:var(--t3)">—</span><span class="hrl">8d</span></div>
+        <div class="hr"><span style="color:var(--t3)">—</span><span class="hrl">15d</span></div>
+        <div class="hr"><span style="color:var(--t3)">—</span><span class="hrl">30d</span></div>
+        <div class="hr"><span style="color:var(--t3)">—</span><span class="hrl">90d</span></div>
+      </div>
+    </div>
+
+    <div class="hrow" style="border-left-color:#f59e0b">
+      <div class="hrl-l">
+        <span class="htk" style="color:#f59e0b">BSBR</span>
+        <span class="hsi" style="color:#f59e0b">WATCH</span>
+        <span class="hsc">40</span>
+      </div>
+      <div class="hrl-p">
+        <span>Buy $5.20</span><span class="hp-a">→</span><span>Pick $5.30</span>
+      </div>
+      <div class="hrl-r">
+        <div class="hr"><span style="color:var(--t3)">—</span><span class="hrl">3d</span></div>
+        <div class="hr"><span style="color:var(--t3)">—</span><span class="hrl">8d</span></div>
+        <div class="hr"><span style="color:var(--t3)">—</span><span class="hrl">15d</span></div>
+        <div class="hr"><span style="color:var(--t3)">—</span><span class="hrl">30d</span></div>
+        <div class="hr"><span style="color:var(--t3)">—</span><span class="hrl">90d</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PERFORMANCE
+═══════════════════════════════════════════════════ -->
+<div id="t-perf" class="pane">
+  <div class="sec">Forward Returns · vs Price at Detection</div>
+  <div class="pstats">
+    <p class="empty" style="padding:16px">Returns populate as positions age.</p>
+  </div>
+  <div class="ptw">
+    <table class="ptbl">
+      <thead>
+        <tr>
+          <th>Date</th><th>Ticker</th><th>Signal</th><th>Score</th><th>Type</th>
+          <th>Buy $</th><th>Pick $</th><th>+3D</th><th>+8D</th><th>+15D</th><th>+30D</th><th>+90D</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="td-m">2026-06-13</td>
+          <td><b style="color:#3b82f6">SMMT</b></td>
+          <td style="color:#3b82f6">BUY</td>
+          <td style="color:#3b82f6;font-weight:700">70</td>
+          <td><span class="tcl">⚡</span></td>
+          <td class="td-m">$13.12</td><td class="td-m">$15.07</td>
+          <td style="color:var(--t3);font-weight:600">—</td>
+          <td style="color:var(--t3);font-weight:600">—</td>
+          <td style="color:var(--t3);font-weight:600">—</td>
+          <td style="color:var(--t3);font-weight:600">—</td>
+          <td style="color:var(--t3);font-weight:600">—</td>
+        </tr>
+        <tr>
+          <td class="td-m">2026-06-13</td>
+          <td><b style="color:#f59e0b">NRDY</b></td>
+          <td style="color:#f59e0b">WATCH</td>
+          <td style="color:#f59e0b;font-weight:700">50</td>
+          <td>—</td>
+          <td class="td-m">$0.97</td><td class="td-m">$0.78</td>
+          <td style="color:var(--t3);font-weight:600">—</td>
+          <td style="color:var(--t3);font-weight:600">—</td>
+          <td style="color:var(--t3);font-weight:600">—</td>
+          <td style="color:var(--t3);font-weight:600">—</td>
+          <td style="color:var(--t3);font-weight:600">—</td>
+        </tr>
+        <tr>
+          <td class="td-m">2026-06-13</td>
+          <td><b style="color:#f59e0b">GOTU</b></td>
+          <td style="color:#f59e0b">WATCH</td>
+          <td style="color:#f59e0b;font-weight:700">41</td>
+          <td>—</td>
+          <td class="td-m">$2.24</td><td class="td-m">$1.67</td>
+          <td style="color:var(--t3);font-weight:600">—</td>
+          <td style="color:var(--t3);font-weight:600">—</td>
+          <td style="color:var(--t3);font-weight:600">—</td>
+          <td style="color:var(--t3);font-weight:600">—</td>
+          <td style="color:var(--t3);font-weight:600">—</td>
+        </tr>
+        <tr>
+          <td class="td-m">2026-06-13</td>
+          <td><b style="color:#f59e0b">BSBR</b></td>
+          <td style="color:#f59e0b">WATCH</td>
+          <td style="color:#f59e0b;font-weight:700">40</td>
+          <td>—</td>
+          <td class="td-m">$5.20</td><td class="td-m">$5.30</td>
+          <td style="color:var(--t3);font-weight:600">—</td>
+          <td style="color:var(--t3);font-weight:600">—</td>
+          <td style="color:var(--t3);font-weight:600">—</td>
+          <td style="color:var(--t3);font-weight:600">—</td>
+          <td style="color:var(--t3);font-weight:600">—</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</main>
+
+<footer>
+  <div class="footer-disclaimer">
+    <span>Insider Tracker</span>
+    <div class="footer-dot"></div>
+    <span>Informational only · Not financial advice</span>
+  </div>
+  <span>Generated 2026-06-13 22:19 MST</span>
+</footer>
+
+</div><!-- /layout -->
+
+<script>
+// ── Tab switching ──────────────────────────────────────────────────────────────
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ── Score ring animation ───────────────────────────────────────────────────────
+(function animateRings() {
+  document.querySelectorAll('.ring-outer[data-score]').forEach(wrap => {
+    const fill   = wrap.querySelector('.ring-fill');
+    if (!fill) return;
+    const score  = parseFloat(wrap.dataset.score || 0);
+    const color  = wrap.dataset.color || '#00e5c4';
+    const target = score / 100 * 360;
+    const DUR    = 1100;
+    const t0     = performance.now();
+
+    function tick(now) {
+      const p    = Math.min((now - t0) / DUR, 1.0);
+      const ease = 1 - Math.pow(1 - p, 3);
+      const deg  = ease * target;
+      fill.style.background =
+        `conic-gradient(${color} ${deg.toFixed(2)}deg, transparent ${deg.toFixed(2)}deg)`;
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    setTimeout(() => requestAnimationFrame(tick), 250);
+  });
+}());
+
+// ── Breakdown bar animation ────────────────────────────────────────────────────
+(function animateBreakdowns() {
+  // For the first card (SMMT), we have data-fills; others have inline widths already.
+  // Animate all bd-fill elements that start at width:0
+  setTimeout(() => {
+    // Handle SMMT (data-driven)
+    document.querySelectorAll('.breakdown[data-fills]').forEach(panel => {
+      const fills  = JSON.parse(panel.dataset.fills);
+      const bars   = panel.querySelectorAll('.bd-fill');
+      bars.forEach((bar, i) => {
+        bar.style.width = fills[i] + '%';
+      });
+    });
+    // Handle the rest (already have inline widths, just trigger transition)
+    document.querySelectorAll('.breakdown:not([data-fills]) .bd-fill').forEach(bar => {
+      const w = bar.style.width;
+      bar.style.width = '0%';
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => { bar.style.width = w; });
+      });
+    });
+  }, 400);
+}());
+
+// ── Live Arizona clock ─────────────────────────────────────────────────────────
+(function clock() {
+  const el = document.getElementById('az-clock');
+  function tick() {
+    if (!el) return;
+    el.textContent = new Date().toLocaleString('en-US', {
+      timeZone:  'America/Phoenix',
+      weekday:   'short',
+      month:     'short',
+      day:       'numeric',
+      hour:      '2-digit',
+      minute:    '2-digit',
+      second:    '2-digit',
+      hour12:    false,
+    });
+  }
+  tick();
+  setInterval(tick, 1000);
+}());
+
+// ── Market status ──────────────────────────────────────────────────────────────
+(function marketStatus() {
+  const badge = document.getElementById('mkt-status');
+  const label = document.getElementById('mkt-label');
+  if (!badge || !label) return;
+
+  function update() {
+    const now = new Date();
+    // ET offset: MST is UTC-7, ET is UTC-5 (EST) or UTC-4 (EDT)
+    // Use Phoenix time and convert: Phoenix is always UTC-7
+    // Market hours: 9:30am - 4:00pm ET  Mon-Fri
+    const etTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    const day  = etTime.getDay(); // 0=Sun,6=Sat
+    const hr   = etTime.getHours();
+    const min  = etTime.getMinutes();
+    const mins = hr * 60 + min;
+
+    const isWeekday = day >= 1 && day <= 5;
+    const isOpen    = isWeekday && mins >= 570 && mins < 960; // 9:30–16:00
+    const isPreMkt  = isWeekday && mins >= 240 && mins < 570; // 4am–9:30am
+
+    badge.className = 'mkt-badge' + (isOpen ? ' open' : '');
+    label.textContent = isOpen ? 'MARKET OPEN' : isPreMkt ? 'PRE-MARKET' : 'MARKET CLOSED';
+  }
+  update();
+  setInterval(update, 30000);
+}());
+</script>
+</body>
+</html>

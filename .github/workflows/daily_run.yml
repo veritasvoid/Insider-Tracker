@@ -1,0 +1,90 @@
+name: Daily Insider Tracker
+
+on:
+  schedule:
+    # 14:30 UTC = 9:30 AM ET (EST) / 10:30 AM ET (EDT)
+    # Runs Mon–Fri, ~15 min after market open so prices are settled
+    - cron: '30 14 * * 1-5'
+  workflow_dispatch:  # Allow manual trigger from GitHub UI
+
+permissions:
+  contents: write   # required to commit DB + HTML back to repo
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      # ── 1. Checkout (includes committed DB + docs) ─────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # ── 2. Python setup with pip cache ─────────────────────────────────────
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # ── 3. Inject API keys into config.yaml (NEVER committed) ──────────────
+      - name: Write config.yaml from secrets
+        working-directory: Insider_Tracker
+        run: |
+          cat > config.yaml << 'EOF'
+          scrape:
+            url: "http://openinsider.com/latest-ceo-cfo-purchases-25k"
+            min_value: 100000
+            lookback_days: 3
+            max_results: 100
+            request_timeout: 15
+            ceo_cfo_titles:
+              - "CEO"
+              - "CFO"
+              - "Chief Executive"
+              - "Chief Financial"
+          alpaca:
+            api_key: "${{ secrets.ALPACA_API_KEY }}"
+            api_secret: "${{ secrets.ALPACA_API_SECRET }}"
+            data_url: "https://data.alpaca.markets/v2"
+            bars_limit: 200
+            request_timeout: 20
+          polygon:
+            api_key: "${{ secrets.POLYGON_API_KEY }}"
+            base_url: "https://api.polygon.io/v2"
+            request_timeout: 20
+          enrich:
+            history_days: 200
+            velocity_days: 5
+          gemini:
+            api_key: "${{ secrets.GEMINI_API_KEY }}"
+            model: "gemini-2.5-flash"
+            news_lookback_days: 14
+            request_timeout: 30
+          anthropic:
+            api_key: "${{ secrets.ANTHROPIC_API_KEY }}"
+            model: "claude-haiku-4-5-20251001"
+            request_timeout: 60
+          EOF
+
+      # ── 4. Run the full pipeline ────────────────────────────────────────────
+      - name: Run pipeline
+        working-directory: Insider_Tracker
+        run: python main.py
+
+      # ── 5. Commit updated DB + HTML back to repo ────────────────────────────
+      - name: Commit results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/index.html
+          git add Insider_Tracker/data/insider_tracker.db
+          # Only commit if something actually changed
+          git diff --cached --quiet || git commit -m "chore: daily run $(date -u +%Y-%m-%d)"
+          git push

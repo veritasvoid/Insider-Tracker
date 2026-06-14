@@ -1,0 +1,41 @@
+# config.template.yaml
+# Copy this to config.yaml and fill in your API keys for local runs.
+# The GitHub Actions workflow generates config.yaml automatically from Secrets.
+scrape:
+  url: "http://openinsider.com/latest-ceo-cfo-purchases-25k"
+  min_value: 100000
+  lookback_days: 3
+  max_results: 100
+  request_timeout: 15
+  ceo_cfo_titles:
+    - "CEO"
+    - "CFO"
+    - "Chief Executive"
+    - "Chief Financial"
+
+alpaca:
+  api_key: "YOUR_ALPACA_API_KEY"
+  api_secret: "YOUR_ALPACA_API_SECRET"
+  data_url: "https://data.alpaca.markets/v2"
+  bars_limit: 200
+  request_timeout: 20
+
+polygon:
+  api_key: "YOUR_POLYGON_API_KEY"
+  base_url: "https://api.polygon.io/v2"
+  request_timeout: 20
+
+enrich:
+  history_days: 200
+  velocity_days: 5
+
+gemini:
+  api_key: "YOUR_GEMINI_API_KEY"
+  model: "gemini-2.5-flash"
+  news_lookback_days: 14
+  request_timeout: 30
+
+anthropic:
+  api_key: "YOUR_ANTHROPIC_API_KEY"
+  model: "claude-haiku-4-5-20251001"
+  request_timeout: 60
