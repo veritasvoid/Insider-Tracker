@@ -62,11 +62,6 @@ jobs:
           enrich:
             history_days: 200
             velocity_days: 5
-          gemini:
-            api_key: "${{ secrets.GEMINI_API_KEY }}"
-            model: "gemini-2.5-flash"
-            news_lookback_days: 14
-            request_timeout: 30
           anthropic:
             api_key: "${{ secrets.ANTHROPIC_API_KEY }}"
             model: "claude-haiku-4-5-20251001"
