@@ -111,164 +111,69 @@ body::before{
 .sec::after{content:'';flex:1;height:1px;background:var(--bdr)}
 
 /* ── PICK CARD ── */
-.picks{display:flex;flex-direction:column;gap:18px}
+.picks{display:flex;flex-direction:column;gap:14px}
 
 .card{
   position:relative;border-radius:16px;overflow:hidden;
   background:var(--card);
   backdrop-filter:blur(32px) saturate(170%);
   -webkit-backdrop-filter:blur(32px) saturate(170%);
-  border:1px solid rgba(var(--ac),0.18);
-  border-top:1px solid rgba(var(--ac),0.40);
   box-shadow:
     0 24px 56px rgba(0,0,0,0.5),
     0  6px 20px rgba(0,0,0,0.3),
     inset 0 1px 0 rgba(255,255,255,0.07);
 }
-/* Can't use rgba() on custom property directly; use workaround */
 .card{border-color:color-mix(in srgb,var(--ac) 22%,transparent)}
 .card{border-top-color:color-mix(in srgb,var(--ac) 44%,transparent)}
-
 .card-stripe{
   position:absolute;left:0;top:0;bottom:0;width:4px;
   background:linear-gradient(180deg,var(--ac),color-mix(in srgb,var(--ac) 20%,transparent));
 }
-
-.card-body{padding:24px 28px 20px 32px;display:flex;flex-direction:column;gap:0}
-
-/* head */
-.card-head{
-  display:flex;align-items:flex-start;justify-content:space-between;
-  gap:20px;margin-bottom:20px;
-}
-.card-id{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1}
+.card-body{display:flex;flex-direction:row;align-items:stretch;padding:0;gap:0}
+.col-id{width:220px;flex-shrink:0;padding:16px 16px 16px 26px;border-right:1px solid var(--bdr);display:flex;flex-direction:column;gap:5px}
+.ci-header{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .card-rank{font-family:var(--mono);font-size:11px;color:var(--muted)}
-.card-ticker{
-  font-family:var(--mono);font-size:46px;font-weight:800;
-  line-height:1;color:var(--text);letter-spacing:-1px;
-}
-.card-co{font-size:13px;color:var(--muted)}
-
-/* Sector tag — prominent */
-.sector-tag{
-  display:inline-flex;align-items:center;gap:5px;
-  font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:0.5px;
-  padding:6px 14px;border-radius:6px;border:1px solid;
-  width:fit-content;margin:4px 0 2px;
-}
-
-.card-meta{
-  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
-  font-size:12px;color:var(--muted);margin-top:2px;
-}
-.meta-dot{opacity:.3}
-.sent{
-  font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:1px;
-  padding:2px 8px;border-radius:4px;
-}
+.card-ticker{font-family:var(--mono);font-size:28px;font-weight:800;line-height:1;color:var(--text);letter-spacing:-0.5px}
+.card-co{font-size:12px;color:var(--muted);margin-top:2px}
+.b1-meta{display:flex;flex-direction:column;gap:3px;font-size:11px;color:var(--muted)}
+.meta-role{color:var(--muted)}
+.meta-date{font-weight:600;color:var(--text)}
+.ci-buyprice{display:flex;align-items:baseline;gap:6px;margin-top:6px}
+.px-buy{font-family:var(--mono);font-size:20px;font-weight:800;color:var(--text)}
+.px-buy-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px}
+.b2-sub{font-size:11px;color:var(--muted)}
+.sent{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:1px;padding:2px 7px;border-radius:4px}
 .s-bull{color:#00ffd4;background:rgba(0,255,212,0.1)}
 .s-bear{color:#ff4757;background:rgba(255,71,87,0.1)}
 .s-neut{color:var(--muted);background:rgba(107,120,146,0.1)}
-.cluster-tag{
-  font-family:var(--mono);font-size:11px;font-weight:700;
-  color:var(--amber);background:rgba(251,191,36,0.1);
-  border:1px solid rgba(251,191,36,0.3);border-radius:6px;
-  padding:4px 12px;width:fit-content;
-  box-shadow:0 0 14px rgba(251,191,36,0.12);
-}
-
-/* score ring */
-.card-ring{flex-shrink:0}
-.ring-outer{
-  position:relative;width:104px;height:104px;flex-shrink:0;
-  border-radius:50%;
-}
-.ring-track{
-  position:absolute;inset:0;border-radius:50%;
-  border:11px solid rgba(255,255,255,0.08);
-}
-.ring-fill{
-  position:absolute;inset:0;border-radius:50%;
-  background:conic-gradient(transparent 0deg,transparent 360deg);
-  /* mask creates donut — only outer ring visible */
-  -webkit-mask:radial-gradient(transparent 40px,black 41px);
-  mask:radial-gradient(transparent 40px,black 41px);
-}
-.ring-text{
-  position:absolute;inset:0;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  pointer-events:none;
-}
-.ring-num{font-family:var(--mono);font-size:26px;font-weight:800;line-height:1}
-.ring-den{font-family:var(--mono);font-size:10px;color:var(--muted)}
-.ring-lbl{font-family:var(--mono);font-size:9px;font-weight:800;letter-spacing:1.5px;margin-top:3px}
-
-/* prices */
-.card-prices{
-  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
-  padding:14px 0;border-top:1px solid var(--bdr);border-bottom:1px solid var(--bdr);
-  margin-bottom:16px;
-}
-.px-val{font-family:var(--mono);font-size:19px;font-weight:700;color:var(--text)}
-.px-lbl{font-size:11px;color:var(--muted)}
-.px-arr{font-size:14px;color:var(--muted)}
-.px-chg{font-family:var(--mono);font-size:14px;font-weight:700}
-
-/* metrics */
-.card-metrics{
-  display:grid;grid-template-columns:repeat(6,1fr);
-  gap:8px;margin-bottom:16px;
-}
-.m{}
-.mv{display:block;font-family:var(--mono);font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}
-.mk{display:block;font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:0.3px}
-
-/* news */
-.card-news{margin-bottom:16px}
-.news-hl{
-  font-family:var(--body);font-style:italic;font-size:14px;font-weight:600;
-  color:#c8d5e8;line-height:1.6;margin-bottom:8px;
-  border-left:3px solid color-mix(in srgb,var(--ac) 60%,transparent);
-  padding-left:12px;
-}
-.news-body{font-size:12px;color:var(--muted);line-height:1.75}
-.news-srcs{display:flex;gap:8px;margin-top:8px}
-.src-a{
-  font-family:var(--mono);font-size:10px;color:var(--muted);
-  padding:3px 10px;border:1px solid var(--bdr);border-radius:5px;
-}
+.cluster-tag{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--amber);background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);border-radius:5px;padding:2px 8px}
+.sector-tag{display:inline-flex;align-items:center;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.5px;padding:2px 7px;border-radius:4px;border:1px solid}
+.col-score{width:220px;flex-shrink:0;padding:16px;border-right:1px solid var(--bdr);display:flex;flex-direction:column;align-items:center;gap:10px}
+.ci-cluster{width:100%;text-align:center}
+.b2-tech{display:flex;flex-direction:column;gap:5px;width:100%}
+.tc{display:flex;justify-content:space-between;align-items:baseline;gap:6px}
+.tk{font-size:11px;color:var(--muted);white-space:nowrap}
+.tv{font-family:var(--mono);font-weight:700;font-size:12px;font-variant-numeric:tabular-nums}
+.ring-outer{position:relative;width:64px;height:64px;flex-shrink:0;border-radius:50%}
+.ring-track{position:absolute;inset:0;border-radius:50%;border:7px solid rgba(255,255,255,0.08)}
+.ring-fill{position:absolute;inset:0;border-radius:50%;background:conic-gradient(transparent 0deg,transparent 360deg);-webkit-mask:radial-gradient(transparent 24px,black 25px);mask:radial-gradient(transparent 24px,black 25px)}
+.ring-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+.ring-num{font-family:var(--mono);font-size:16px;font-weight:800;line-height:1}
+.ring-den{display:none}
+.ring-lbl{font-family:var(--mono);font-size:7px;font-weight:800;letter-spacing:1px;margin-top:2px}
+.col-news{flex:1;min-width:0;padding:16px 20px;border-right:1px solid var(--bdr);display:flex;flex-direction:column;gap:8px}
+.news-line{font-size:13px;line-height:1.55;display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+.news-hl{font-style:italic;font-weight:600;color:#c8d5e8}
+.news-body{font-size:12px;color:var(--muted);line-height:1.7}
+.src-a{font-family:var(--mono);font-size:10px;color:var(--muted);padding:2px 6px;border:1px solid var(--bdr);border-radius:4px;white-space:nowrap}
 .src-a:hover{color:var(--amber);border-color:rgba(251,191,36,0.4);text-decoration:none}
-
-/* catalysts — prominent */
-.card-cats{
-  background:rgba(255,255,255,0.025);
-  border:1px solid var(--bdr);border-radius:10px;
-  padding:14px 16px;margin-bottom:12px;
-}
-.cats-label{
-  font-family:var(--mono);font-size:9px;font-weight:700;
-  letter-spacing:2px;color:var(--muted);margin-bottom:10px;
-}
-.cats-grid{display:flex;flex-direction:column;gap:7px}
-.cat-pill{
-  display:flex;align-items:flex-start;gap:10px;
-  padding:9px 14px;border-radius:8px;border:1px solid;
-  font-size:12px;font-weight:600;line-height:1.45;
-}
-.cat-bullet{
-  width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:3px;
-}
-.no-cats{font-size:12px;color:var(--muted);font-style:italic}
-
-/* risk */
-.card-risk{
-  display:flex;align-items:flex-start;gap:8px;
-  background:rgba(255,71,87,0.06);
-  border:1px solid rgba(255,71,87,0.22);border-radius:8px;padding:10px 14px;
-}
-.risk-icon{font-size:13px;flex-shrink:0;margin-top:1px}
-.risk-body{font-size:12px;color:#fca5a5;line-height:1.65}
-
+.col-cats{width:200px;flex-shrink:0;padding:16px 18px;display:flex;flex-direction:column;gap:7px}
+.cats-lbl{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:1.5px;color:var(--muted)}
+.cats-chips{display:flex;flex-direction:column;gap:5px;flex:1}
+.cat-chip{display:block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:5px;border:1px solid}
+.no-cats{font-size:11px;color:var(--muted);font-style:italic}
+.risk-line{font-size:11px;color:#fca5a5;line-height:1.45;display:flex;align-items:flex-start;gap:5px;padding-top:8px;border-top:1px solid rgba(255,71,87,0.15);margin-top:auto}
+.risk-icon{font-size:11px;flex-shrink:0}
 /* ── History ── */
 .hgroup{margin-bottom:28px}
 .hg-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
@@ -394,7 +299,7 @@ footer{
     </div>
   </div>
   <div class="clock">
-    <div class="clock-t" id="az-clock">Sun, Jun 14  16:15:18</div>
+    <div class="clock-t" id="az-clock">Sun, Jun 14  19:12:12</div>
     <div class="clock-z">ARIZONA TIME · MST · UTC−7</div>
   </div>
 </header>
@@ -409,30 +314,32 @@ footer{
 
 <div id="t-today" class="pane active">
   <div class="hero">
-<div class="hc"><div class="hc-l">Today's Picks</div><div class="hc-v">7</div><div class="hc-s">Unique tickers</div></div>
+<div class="hc"><div class="hc-l">Today's Picks</div><div class="hc-v">1</div><div class="hc-s">Unique tickers</div></div>
 <div class="hc"><div class="hc-l">Cluster Signals</div><div class="hc-v">1</div><div class="hc-s">Multi-insider buys</div></div>
 <div class="hc"><div class="hc-l">Top Pick</div><div class="hc-v" style="font-size:22px">SMMT&nbsp;·&nbsp;74</div><div class="hc-s">BUY</div></div>
-<div class="hc"><div class="hc-l">Tracked Positions</div><div class="hc-v">7</div><div class="hc-s">In performance log</div></div></div>
+<div class="hc"><div class="hc-l">Tracked Positions</div><div class="hc-v">1</div><div class="hc-s">In performance log</div></div></div>
   <div class="sec">June 14, 2026 · Scored Picks</div>
   <div class="picks"><article class="card" style="--ac:#2979ff">
   <div class="card-stripe"></div>
   <div class="card-body">
 
-    <div class="card-head">
-      <div class="card-id">
-        <div class="card-rank">#1</div>
-        <div class="card-ticker">SMMT</div>
-        <div class="card-co">Summit Therapeutics Inc.</div>
-        
-        <div class="card-meta">
-          <span class="meta-role">Co-CEO</span>
-          <span class="meta-dot">·</span>
-          <span class="meta-date">Trade 2026-06-04</span>
-          <span class="sent s-bull">BULLISH</span>
-          <span class="cluster-tag">⚡ CLUSTER · 3 insiders</span>
-        </div>
+    <div class="col-id">
+      <div class="ci-header">
+        <span class="card-rank">#1</span>
+        <span class="card-ticker">SMMT</span>
+        <span class="sent s-bull">BULLISH</span>
       </div>
-      <div class="card-ring"><div class="ring-outer" data-score="74.0" data-color="#2979ff">
+      <div class="card-co">Summit Therapeutics Inc.</div>
+      <div class="b1-meta"><span class="meta-role">Co-Chief Executive Officer</span> <span class="meta-date">Trade 2026-06-04</span> <div class="sector-tag" style="color:#c4b5fd;background:#2e1065;border-color:color-mix(in srgb,#c4b5fd 40%,transparent)">Biotechnology</div></div>
+      <div class="ci-buyprice">
+        <span class="px-buy">$13.86</span>
+        <span class="px-buy-lbl">buy price</span>
+      </div>
+      <div class="b2-sub">$51.4M total · Δ own +1%</div>
+    </div>
+
+    <div class="col-score">
+      <div class="ring-outer" data-score="74" data-color="#2979ff">
   <div class="ring-track"></div>
   <div class="ring-fill"></div>
   <div class="ring-text">
@@ -440,431 +347,25 @@ footer{
     <span class="ring-den">/100</span>
     <span class="ring-lbl" style="color:#2979ff">BUY</span>
   </div>
-</div></div>
-    </div>
-
-    <div class="card-prices">
-      <span class="px-val">$13.86</span>
-      <span class="px-lbl">insider buy</span>
-      <span class="px-arr">→</span>
-      <span class="px-val">$15.07</span>
-      <span class="px-lbl">now</span>
-      <span class="px-chg" style="color:#00ffd4">▲8.7%</span>
-    </div>
-
-    <div class="card-metrics">
-      <div class="m"><span class="mv" style="color:#ff4757">-16.1%</span><span class="mk">vs EMA50</span></div>
-      <div class="m"><span class="mv" style="color:#ff4757">-18.9%</span><span class="mk">vs EMA200</span></div>
-      <div class="m"><span class="mv" style="color:#ff4757">-13.2%</span><span class="mk">5d velocity</span></div>
-      <div class="m"><span class="mv">26.9%</span><span class="mk">short float</span></div>
-      <div class="m"><span class="mv">$51.4M</span><span class="mk">total bought</span></div>
-      <div class="m"><span class="mv">+1%</span><span class="mk">Δ ownership</span></div>
-    </div>
-
-    <div class="card-news">
-      <blockquote class="news-hl">"Summit Therapeutics Co-CEOs Make Massive Insider Buys Following Positive Ivonescimab Clinical Data and FDA BLA Acceptance"</blockquote>
-      <p class="news-body">Summit Therapeutics recently experienced significant insider buying, with Co-CEOs Maky Zanganeh and Robert Duggan, along with other executives, purchasing tens of millions of dollars worth of shares in early June 2026, signaling strong internal conviction. This vote of confidence follows positive Phase III HARMONi-6 data for its lead asset, ivonescimab, in non-small cell lung cancer and encouraging Phase II data in metastatic colorectal cancer, presented at ASCO 2026. Additionally, the FDA has accepted ivonescimab's Biologics License Application, establishing a clear regulatory pathway.</p>
-      <div class="news-srcs"><a href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEM5RwCnqgtP5xRm-lNMZxaOqUS9V1VFgqGt-mQ1l2ABsZomKdTpn-X4MHOCpKcpbYxt2LNSkgnFOzMaYbv2K91gUKGtptbc7iwFGP239xA5-sjj3L2vMN1hK-MTQq0oSKmWrtkRB34-m-Uw3zsVXMwV5xEZqN_nK_WyVm0OFmX0hRED4_s2hjzRI01HQgYnNV5ZUDb2lVgzec6YwNISUi1IT_Gp-NIQfz8XLjIaB3JwlV2ieqDwE1dTcZ6rP7VqtHJHc8cDZjXq0JPkX2sdh44DJ2sA4U=" target="_blank" class="src-a">↗ src 1</a><a href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGq6hKK3u_Xt88hRUfl1Gw_Wxsbt5Ozgi_v0RhuKUlJWrgRFsBIZM65410G08X_cJmFcQkp29Ig45ENR3TCyL4Qo9mrINz0ePIChmJqhA_YZjcY-AMBz5O_Xg3InbzQzQAD5QcHeLnSIF_c_HXbxRyB9eT-243teUdLkhRNfIZIiv73n-BCPZLX0ypVF2WDOm_lG8x7GJ18SC15_FAfRYR8sSHIJXc1oPCelx-qS_msQ-udekeO35OudlzWSpOVVIggWo8tNXycwDI=" target="_blank" class="src-a">↗ src 2</a></div>
-    </div>
-
-    <div class="card-cats">
-      <div class="cats-label">UPCOMING CATALYSTS</div>
-      <div class="cats-grid"><div class="cat-pill" style="color:#00ffd4;background:rgba(0,255,212,0.1);border-color:rgba(0,255,212,0.35)"><span class="cat-bullet" style="background:#00ffd4"></span>FDA PDUFA date for ivonescimab in EGFR-mutated non-squamous NSCLC: November 2026</div><div class="cat-pill" style="color:#5b9bff;background:rgba(91,155,255,0.1);border-color:rgba(91,155,255,0.35)"><span class="cat-bullet" style="background:#5b9bff"></span>Q2 earnings ~August 10</div><div class="cat-pill" style="color:#00ffd4;background:rgba(0,255,212,0.1);border-color:rgba(0,255,212,0.35)"><span class="cat-bullet" style="background:#00ffd4"></span>Further data readouts from ongoing global Phase III trials for ivonescimab</div></div>
-    </div>
-
-    <div class="card-risk">
-      <span class="risk-icon">⚠</span>
-      <span class="risk-body">FDA could issue a complete response letter (CRL) rather than approval at November 2026 PDUFA, and high short float (26.9%) combined with 18.9% drawdown from 200-EMA creates vulnerability to gap-down on negative regulatory outcome.</span>
-    </div>
-
-  </div>
-</article>
-<article class="card" style="--ac:#fbbf24">
-  <div class="card-stripe"></div>
-  <div class="card-body">
-
-    <div class="card-head">
-      <div class="card-id">
-        <div class="card-rank">#2</div>
-        <div class="card-ticker">DBGI</div>
-        <div class="card-co">Digital Brands Group, Inc.</div>
-        
-        <div class="card-meta">
-          <span class="meta-role">CEO</span>
-          <span class="meta-dot">·</span>
-          <span class="meta-date">Trade 2026-06-10</span>
-          <span class="sent s-neut">NEUTRAL</span>
-          
-        </div>
+</div>
+      <div class="ci-cluster"><span class="cluster-tag">⚡ CLUSTER · 3 insiders</span></div>
+      <div class="b2-tech">
+        <div class="tc"><span class="tk">EMA50</span><span class="tv" style="color:#ff4757">-16.1%</span></div>
+        <div class="tc"><span class="tk">EMA200</span><span class="tv" style="color:#ff4757">-18.9%</span></div>
+        <div class="tc"><span class="tk">Vel 5d</span><span class="tv" style="color:#ff4757">-13.2%</span></div>
+        <div class="tc"><span class="tk">Short</span><span class="tv">26.9%</span></div>
       </div>
-      <div class="card-ring"><div class="ring-outer" data-score="50.0" data-color="#fbbf24">
-  <div class="ring-track"></div>
-  <div class="ring-fill"></div>
-  <div class="ring-text">
-    <span class="ring-num" style="color:#fbbf24">50</span>
-    <span class="ring-den">/100</span>
-    <span class="ring-lbl" style="color:#fbbf24">WATCH</span>
-  </div>
-</div></div>
     </div>
 
-    <div class="card-prices">
-      <span class="px-val">$1.13</span>
-      <span class="px-lbl">insider buy</span>
-      <span class="px-arr">→</span>
-      <span class="px-val">$0.93</span>
-      <span class="px-lbl">now</span>
-      <span class="px-chg" style="color:#ff4757">▼17.6%</span>
+    <div class="col-news">
+      <div class="news-line"><span class="news-hl">"Summit Therapeutics Co-CEOs Make Massive Insider Buys Following Positive Ivonescimab Clinical Data and FDA BLA Acceptance"</span> <a href="https://summit-therapeutics.com" target="_blank" class="src-a">↗1</a><a href="https://sec.gov" target="_blank" class="src-a">↗2</a></div>
+      <p class="news-body">Summit Therapeutics recently experienced significant insider buying, with Co-CEOs Maky Zanganeh and Robert Duggan purchasing tens of millions of dollars worth of shares, signaling strong internal conviction following positive Phase III HARMONi-6 data and FDA BLA acceptance for ivonescimab.</p>
     </div>
 
-    <div class="card-metrics">
-      <div class="m"><span class="mv" style="color:#ff4757">-45.7%</span><span class="mk">vs EMA50</span></div>
-      <div class="m"><span class="mv" style="color:#ff4757">-85.5%</span><span class="mk">vs EMA200</span></div>
-      <div class="m"><span class="mv" style="color:#00ffd4">+163.4%</span><span class="mk">5d velocity</span></div>
-      <div class="m"><span class="mv">7.5%</span><span class="mk">short float</span></div>
-      <div class="m"><span class="mv">$699K</span><span class="mk">total bought</span></div>
-      <div class="m"><span class="mv">+882%</span><span class="mk">Δ ownership</span></div>
-    </div>
-
-    <div class="card-news">
-      <blockquote class="news-hl">"Digital Brands Group CEO Makes Substantial Insider Stock Purchase, Signaling Confidence"</blockquote>
-      <p class="news-body">Digital Brands Group (DBGI) CEO John Hilburn IV Davis recently purchased 618,333 shares of the company's stock for approximately $698,716 at $1.13 per share on June 10, 2026, marking the first significant insider buy in the company's history and signaling strong executive confidence. This comes alongside news of an expanded partnership with GCC and initial orders for a $125 million U.S. Program, which is expected to provide new revenue opportunities. However, these positive developments are tempered by ongoing concerns about shrinking revenue, heavy losses, and negative cash flow, leading some analysts to maintain a neutral outlook despite the bullish insider activity.</p>
-      <div class="news-srcs"><a href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFYEBQAAXio5_-Hl1s9AgbyG0d8sq6ACoP5r6q5qG-KNX_JwWjolIXnZ9TTscYMaIeYLQJkl-s_GlGOlBzV_ywnpHXriouk6CqwVUY-9x0pzWWchS_9_wX4MNsFqBLQVsmLr10LUl8Ce95vHhRKdIgq_UxHxgG9q7W9LjeOuXcwDKZlsNWqvN8PoQjVzzopOIdIVoH00VQuvI6P-1MK6ScWq8B-HjavD2dBpPYJockSIfSm4t7SkAh8SqAEbQcmteFOzmPKQ76k2ka2fQ==" target="_blank" class="src-a">↗ src 1</a><a href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGv2ZFOVqu7ILyFcOZrZgNO5QnMLIb5LP2ms2zQuSMrSLCuHq9aOcQ_xhSW1vQAxnTB3hs0lSUZ9JohGSBSOYBLOwp5noyMP5wMFhokVS-AqDMxiQYZlGuFUho6h_nfqIYp6vJ4iR09MJuMOnd02Z-A1wi4yarKU7u3wVJsGlM7SFBIuNVrPYDoM3qjfQIEss73q8JoH0DrHUNZ3Mm9dwYtw31OW8fETZR2hMAzfqukCKU=" target="_blank" class="src-a">↗ src 2</a></div>
-    </div>
-
-    <div class="card-cats">
-      <div class="cats-label">UPCOMING CATALYSTS</div>
-      <div class="cats-grid"><div class="cat-pill" style="color:#5b9bff;background:rgba(91,155,255,0.1);border-color:rgba(91,155,255,0.35)"><span class="cat-bullet" style="background:#5b9bff"></span>Q2 earnings ~August 12, 2026</div><div class="cat-pill" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)"><span class="cat-bullet" style="background:#8892a4"></span>Further updates on the $125M U.S. Program with GCC</div><div class="cat-pill" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)"><span class="cat-bullet" style="background:#8892a4"></span>Developments in AI strategy and brand protection initiatives</div></div>
-    </div>
-
-    <div class="card-risk">
-      <span class="risk-icon">⚠</span>
-      <span class="risk-body">Despite the 882% ownership increase, the company remains unprofitable with negative free cash flow and shrinking revenue—the $125M GCC program is forward-looking revenue, not yet realized, and execution risk remains high if the partnership stalls or Q2 results disappoint.</span>
-    </div>
-
-  </div>
-</article>
-<article class="card" style="--ac:#fbbf24">
-  <div class="card-stripe"></div>
-  <div class="card-body">
-
-    <div class="card-head">
-      <div class="card-id">
-        <div class="card-rank">#3</div>
-        <div class="card-ticker">COSM</div>
-        <div class="card-co">Cosmos Health Inc.</div>
-        
-        <div class="card-meta">
-          <span class="meta-role">CEO</span>
-          <span class="meta-dot">·</span>
-          <span class="meta-date">Trade 2026-06-10</span>
-          <span class="sent s-neut">NEUTRAL</span>
-          
-        </div>
-      </div>
-      <div class="card-ring"><div class="ring-outer" data-score="47.0" data-color="#fbbf24">
-  <div class="ring-track"></div>
-  <div class="ring-fill"></div>
-  <div class="ring-text">
-    <span class="ring-num" style="color:#fbbf24">47</span>
-    <span class="ring-den">/100</span>
-    <span class="ring-lbl" style="color:#fbbf24">WATCH</span>
-  </div>
-</div></div>
-    </div>
-
-    <div class="card-prices">
-      <span class="px-val">$0.23</span>
-      <span class="px-lbl">insider buy</span>
-      <span class="px-arr">→</span>
-      <span class="px-val">$0.25</span>
-      <span class="px-lbl">now</span>
-      <span class="px-chg" style="color:#00ffd4">▲7.3%</span>
-    </div>
-
-    <div class="card-metrics">
-      <div class="m"><span class="mv" style="color:#ff4757">-23.1%</span><span class="mk">vs EMA50</span></div>
-      <div class="m"><span class="mv" style="color:#ff4757">-56.9%</span><span class="mk">vs EMA200</span></div>
-      <div class="m"><span class="mv" style="color:#ff4757">-6.9%</span><span class="mk">5d velocity</span></div>
-      <div class="m"><span class="mv">2.7%</span><span class="mk">short float</span></div>
-      <div class="m"><span class="mv">$160K</span><span class="mk">total bought</span></div>
-      <div class="m"><span class="mv">+6%</span><span class="mk">Δ ownership</span></div>
-    </div>
-
-    <div class="card-news">
-      <blockquote class="news-hl">"Cosmos Health CEO Boosts Stake Amidst New Contracts, Acquisition Plans, and Nasdaq Extension"</blockquote>
-      <p class="news-body">Cosmos Health Inc. CEO Grigorios Siokas recently acquired over $200,000 worth of company shares through a debt exchange and open-market purchases, signaling management's confidence despite the stock trading near its 52-week low. The company also announced new contract manufacturing orders, signed a Letter of Intent to acquire European pharmaceutical manufacturer Doc Pharma S.A., and received a 180-day extension to meet Nasdaq's minimum bid price requirement. These operational advancements and insider buying present a mixed picture against the backdrop of the company's struggling stock price and ongoing efforts to strengthen its financial position and expand its product portfolio.</p>
-      <div class="news-srcs"><a href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHj15ENHdAb0fM6S8Eez-j8pMm-lODMPdcFa7EBvf2nWvC_UYeppaZSpM0lTO35fVQhLaHlErvcFMgqaKtHbnZE8yb69AWOOB-mWfKuovSVmVZSXTJngK3rK1ya8V790204x6J61LZY640fozxY-_68rA6AK-S9ecqk2W3diTLKpw_UcxelZo64XkirLeGs5i39BK6x0wZEZmzVqtOgS8kNi4842ijuxnxQZg==" target="_blank" class="src-a">↗ src 1</a><a href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHQiKVTaI2N5zVP1_kP0l-XeDEUuGmmc8uUBp4h6xr0blw9EYooQhZi7HCKSxWpxeWBsBoSzp7M7A-Vy8ZdF8Ky20M8TSqjqoOoBR5649hJMUgIB2AU7g8xZ2jwtrLSq7GcO54v5g8FPOO6gdgVBYkA9ivsZIsyOlkNVAa8M-d5GjkASetU5xNjLABZ6TToytnMdg==" target="_blank" class="src-a">↗ src 2</a></div>
-    </div>
-
-    <div class="card-cats">
-      <div class="cats-label">UPCOMING CATALYSTS</div>
-      <div class="cats-grid"><div class="cat-pill" style="color:#fbbf24;background:rgba(251,191,36,0.1);border-color:rgba(251,191,36,0.35)"><span class="cat-bullet" style="background:#fbbf24"></span>Completion of Doc Pharma S.A. acquisition</div><div class="cat-pill" style="color:#ff4757;background:rgba(255,71,87,0.1);border-color:rgba(255,71,87,0.35)"><span class="cat-bullet" style="background:#ff4757"></span>Regaining Nasdaq minimum bid price compliance by December 7, 2026</div><div class="cat-pill" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)"><span class="cat-bullet" style="background:#8892a4"></span>Updates on European Investment Bank financing for R&D</div><div class="cat-pill" style="color:#5b9bff;background:rgba(91,155,255,0.1);border-color:rgba(91,155,255,0.35)"><span class="cat-bullet" style="background:#5b9bff"></span>Q2 2026 earnings report</div><div class="cat-pill" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)"><span class="cat-bullet" style="background:#8892a4"></span>Expansion of C-Scrub and C-Sept antiseptic brands in the EU</div><div class="cat-pill" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)"><span class="cat-bullet" style="background:#8892a4"></span>Monetization of non-core assets</div></div>
-    </div>
-
-    <div class="card-risk">
-      <span class="risk-icon">⚠</span>
-      <span class="risk-body">Nasdaq delisting risk and severe capital constraints mean execution of Doc Pharma integration is highly uncertain; equity dilution or failed financing could erase shareholder value before any acquisition synergies materialize.</span>
-    </div>
-
-  </div>
-</article>
-<article class="card" style="--ac:#fbbf24">
-  <div class="card-stripe"></div>
-  <div class="card-body">
-
-    <div class="card-head">
-      <div class="card-id">
-        <div class="card-rank">#4</div>
-        <div class="card-ticker">GOTU</div>
-        <div class="card-co">Gaotu Techedu Inc.</div>
-        
-        <div class="card-meta">
-          <span class="meta-role">CEO</span>
-          <span class="meta-dot">·</span>
-          <span class="meta-date">Trade 2026-06-11</span>
-          <span class="sent s-neut">NEUTRAL</span>
-          
-        </div>
-      </div>
-      <div class="card-ring"><div class="ring-outer" data-score="43.0" data-color="#fbbf24">
-  <div class="ring-track"></div>
-  <div class="ring-fill"></div>
-  <div class="ring-text">
-    <span class="ring-num" style="color:#fbbf24">43</span>
-    <span class="ring-den">/100</span>
-    <span class="ring-lbl" style="color:#fbbf24">WATCH</span>
-  </div>
-</div></div>
-    </div>
-
-    <div class="card-prices">
-      <span class="px-val">$2.24</span>
-      <span class="px-lbl">insider buy</span>
-      <span class="px-arr">→</span>
-      <span class="px-val">$1.67</span>
-      <span class="px-lbl">now</span>
-      <span class="px-chg" style="color:#ff4757">▼25.4%</span>
-    </div>
-
-    <div class="card-metrics">
-      <div class="m"><span class="mv" style="color:#ff4757">-12.9%</span><span class="mk">vs EMA50</span></div>
-      <div class="m"><span class="mv" style="color:#ff4757">-33.5%</span><span class="mk">vs EMA200</span></div>
-      <div class="m"><span class="mv" style="color:#ff4757">-5.1%</span><span class="mk">5d velocity</span></div>
-      <div class="m"><span class="mv">1.7%</span><span class="mk">short float</span></div>
-      <div class="m"><span class="mv">$447K</span><span class="mk">total bought</span></div>
-      <div class="m"><span class="mv">+3%</span><span class="mk">Δ ownership</span></div>
-    </div>
-
-    <div class="card-news">
-      <blockquote class="news-hl">"Gaotu Techedu CEO Buys $447K in Shares, Signaling Confidence Amidst Mixed Q1 Results"</blockquote>
-      <p class="news-body">Gaotu Techedu Inc. (GOTU) CEO Xiangdong Chen recently purchased 200,000 shares for approximately $447,000 on June 11, 2026, a move widely interpreted as a strong vote of confidence in the company's future and potential for recovery. This insider buying activity contributed to an 8% rise in the company's share price during pre-market trading. The purchase follows the company's Q1 2026 earnings report on June 2, which showed revenue beating estimates but also highlighted weaker profits and increased cash outflows, leading to a mixed sentiment among analysts.</p>
-      <div class="news-srcs"><a href="https://www.gurufocus.com/news/2397148/gaotu-techedu-gotu-ceo-acquires-447k-in-shares-stock-rises" target="_blank" class="src-a">↗ src 1</a><a href="https://www.quiverquant.com/news/insider-purchase-ceo-of-gotu-buys-200000-shares/" target="_blank" class="src-a">↗ src 2</a></div>
-    </div>
-
-    <div class="card-cats">
-      <div class="cats-label">UPCOMING CATALYSTS</div>
-      <div class="cats-grid"><div class="cat-pill" style="color:#5b9bff;background:rgba(91,155,255,0.1);border-color:rgba(91,155,255,0.35)"><span class="cat-bullet" style="background:#5b9bff"></span>Q2 2026 earnings report ~September 1, 2026</div></div>
-    </div>
-
-    <div class="card-risk">
-      <span class="risk-icon">⚠</span>
-      <span class="risk-body">Deteriorating profitability and cash burn suggest fundamental challenges in the edtech business model that insider confidence alone may not reverse, and Q2 earnings could disappoint further if operational trends worsen.</span>
-    </div>
-
-  </div>
-</article>
-<article class="card" style="--ac:#fbbf24">
-  <div class="card-stripe"></div>
-  <div class="card-body">
-
-    <div class="card-head">
-      <div class="card-id">
-        <div class="card-rank">#5</div>
-        <div class="card-ticker">NRDY</div>
-        <div class="card-co">Nerdy Inc.</div>
-        
-        <div class="card-meta">
-          <span class="meta-role">CEO</span>
-          <span class="meta-dot">·</span>
-          <span class="meta-date">Trade 2026-06-10</span>
-          <span class="sent s-neut">NEUTRAL</span>
-          
-        </div>
-      </div>
-      <div class="card-ring"><div class="ring-outer" data-score="42.0" data-color="#fbbf24">
-  <div class="ring-track"></div>
-  <div class="ring-fill"></div>
-  <div class="ring-text">
-    <span class="ring-num" style="color:#fbbf24">42</span>
-    <span class="ring-den">/100</span>
-    <span class="ring-lbl" style="color:#fbbf24">WATCH</span>
-  </div>
-</div></div>
-    </div>
-
-    <div class="card-prices">
-      <span class="px-val">$0.94</span>
-      <span class="px-lbl">insider buy</span>
-      <span class="px-arr">→</span>
-      <span class="px-val">$0.78</span>
-      <span class="px-lbl">now</span>
-      <span class="px-chg" style="color:#ff4757">▼16.6%</span>
-    </div>
-
-    <div class="card-metrics">
-      <div class="m"><span class="mv" style="color:#ff4757">-9.1%</span><span class="mk">vs EMA50</span></div>
-      <div class="m"><span class="mv" style="color:#ff4757">-25.2%</span><span class="mk">vs EMA200</span></div>
-      <div class="m"><span class="mv" style="color:#ff4757">-5.6%</span><span class="mk">5d velocity</span></div>
-      <div class="m"><span class="mv">17.1%</span><span class="mk">short float</span></div>
-      <div class="m"><span class="mv">$450K</span><span class="mk">total bought</span></div>
-      <div class="m"><span class="mv">0%</span><span class="mk">Δ ownership</span></div>
-    </div>
-
-    <div class="card-news">
-      <blockquote class="news-hl">"Nerdy CEO Boosts Stake with Nearly $450K in Stock Purchases, Signaling Confidence"</blockquote>
-      <p class="news-body">Nerdy Inc.'s CEO, Charles K. Cohn, recently invested approximately $450,000 in company stock through open-market purchases on June 10 and 11, 2026, a move often interpreted as a strong signal of confidence in the company's future. This insider buying follows a mixed Q1 2026 earnings report where the company exceeded revenue and EPS forecasts but continues to face challenges with ongoing losses, cash burn, and a decline in active members and institutional bookings. While some analysts see the stock as undervalued, others maintain a cautious "Hold" or "Reduce" rating due to financial health concerns and a NYSE non-compliance notice received in March 2026.</p>
-      <div class="news-srcs"><a href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGu-6tHXyZ9RjNfkrzp-oHmRbyE5WoDODzOUPbpHxCnDx3FpUN8vKELZsa7ntkXnFHYyO0GbIFl4_HTnC6yrl0DR3jbtl97eAFEydbkXI0bNcpQir6_bXVgXfcSjKq8PkVWzGVg1SCq2TKfknRLL-dQOhjhJIqJUzEtRMnbbkLbRJVqzY2xuaKyUHrpV4fCyvbIup5DMobjc3ulOW2zjQ00S0QDYOIollos3mGAJmZuxmKlZgM=" target="_blank" class="src-a">↗ src 1</a><a href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFmeT_1O0rEVjASBVDSK8Tz4eYNR6KJt0qJlBteZKEAkJm7Dr29Op0BWr6QnM5QDNdN-GyDu8GogbtXkEGNHU2r05bZ0tceBsptYz7ZIqebxoZw1PAvOaLvSQAOIRrKYQWAENhoX8wXZaoKLCUNeu5hEQufSVZV4auF1LmGJgnmuh35ET-O8_A_Hs1aqjFaxuR2-re89kZFL1lBhYwnGfUYR_Q=" target="_blank" class="src-a">↗ src 2</a></div>
-    </div>
-
-    <div class="card-cats">
-      <div class="cats-label">UPCOMING CATALYSTS</div>
-      <div class="cats-grid"><div class="cat-pill" style="color:#5b9bff;background:rgba(91,155,255,0.1);border-color:rgba(91,155,255,0.35)"><span class="cat-bullet" style="background:#5b9bff"></span>Full Q1 2026 financial filing with detailed revenue and user statistics</div><div class="cat-pill" style="color:#5b9bff;background:rgba(91,155,255,0.1);border-color:rgba(91,155,255,0.35)"><span class="cat-bullet" style="background:#5b9bff"></span>Updated management guidance, particularly on achieving member growth by year-end</div><div class="cat-pill" style="color:#5b9bff;background:rgba(91,155,255,0.1);border-color:rgba(91,155,255,0.35)"><span class="cat-bullet" style="background:#5b9bff"></span>Q2 2026 earnings report (~August 6)</div><div class="cat-pill" style="color:#ff4757;background:rgba(255,71,87,0.1);border-color:rgba(255,71,87,0.35)"><span class="cat-bullet" style="background:#ff4757"></span>Company actions to address NYSE non-compliance notice</div></div>
-    </div>
-
-    <div class="card-risk">
-      <span class="risk-icon">⚠</span>
-      <span class="risk-body">Continued cash burn and declining core metrics (active members, institutional bookings) create risk of further dilution or covenant breach before any turnaround materializes.</span>
-    </div>
-
-  </div>
-</article>
-<article class="card" style="--ac:#fbbf24">
-  <div class="card-stripe"></div>
-  <div class="card-body">
-
-    <div class="card-head">
-      <div class="card-id">
-        <div class="card-rank">#6</div>
-        <div class="card-ticker">BSBR</div>
-        <div class="card-co">Banco Santander (Brasil) S.A.</div>
-        
-        <div class="card-meta">
-          <span class="meta-role">CEO</span>
-          <span class="meta-dot">·</span>
-          <span class="meta-date">Trade 2026-06-02</span>
-          <span class="sent s-neut">NEUTRAL</span>
-          
-        </div>
-      </div>
-      <div class="card-ring"><div class="ring-outer" data-score="41.0" data-color="#fbbf24">
-  <div class="ring-track"></div>
-  <div class="ring-fill"></div>
-  <div class="ring-text">
-    <span class="ring-num" style="color:#fbbf24">41</span>
-    <span class="ring-den">/100</span>
-    <span class="ring-lbl" style="color:#fbbf24">WATCH</span>
-  </div>
-</div></div>
-    </div>
-
-    <div class="card-prices">
-      <span class="px-val">$5.30</span>
-      <span class="px-lbl">insider buy</span>
-      <span class="px-arr">→</span>
-      <span class="px-val">$5.30</span>
-      <span class="px-lbl">now</span>
-      <span class="px-chg" style="color:#ff4757">▼0.0%</span>
-    </div>
-
-    <div class="card-metrics">
-      <div class="m"><span class="mv" style="color:#ff4757">-8.0%</span><span class="mk">vs EMA50</span></div>
-      <div class="m"><span class="mv" style="color:#ff4757">-10.5%</span><span class="mk">vs EMA200</span></div>
-      <div class="m"><span class="mv" style="color:#ff4757">-3.1%</span><span class="mk">5d velocity</span></div>
-      <div class="m"><span class="mv">0.1%</span><span class="mk">short float</span></div>
-      <div class="m"><span class="mv">$1.4M</span><span class="mk">total bought</span></div>
-      <div class="m"><span class="mv">+29%</span><span class="mk">Δ ownership</span></div>
-    </div>
-
-    <div class="card-news">
-      <blockquote class="news-hl">"Banco Santander Brasil CEO Makes Bold Back-to-Back Stock Move"</blockquote>
-      <p class="news-body">The CEO of Banco Santander (Brasil) S.A. recently made a significant insider purchase of over $1.3 million in shares at $5.30, signaling confidence in the company's future. This bullish insider activity comes amidst a mixed economic outlook for Brazil, characterized by persistent high interest rates, fiscal risks, and elevated household debt, which could impact the banking sector. Additionally, recent US trade tensions and potential sanctions related to Brazil's payment systems introduce geopolitical uncertainty for Brazilian financial institutions.</p>
-      <div class="news-srcs"><a href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEBM4ua6xohdDp8NbMAhGJQQ6WOIzRO8e22GD5T4h854mZrwR2amLGGSD2I-jF1dC-YUg3PPyA5vJD7BE7CQUDSXzY88KTaN-9qzwdJaIg2y7ucx5EUr4D7wzWqLU3oPTsIbts=" target="_blank" class="src-a">↗ src 1</a><a href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHNSah9W10njx74dvS07km4fSCMzvTZIVA2xiCCPT5D_kJmxxakQO1X72YvJ4knPzTEAfpJhHF0l8fZCxAWY8T2O-DyuVr6HhDJzYYPkXVN2kKat7TFtSuniMvo1ywIgcsuO6xZqs8k=" target="_blank" class="src-a">↗ src 2</a></div>
-    </div>
-
-    <div class="card-cats">
-      <div class="cats-label">UPCOMING CATALYSTS</div>
-      <div class="cats-grid"><div class="cat-pill" style="color:#5b9bff;background:rgba(91,155,255,0.1);border-color:rgba(91,155,255,0.35)"><span class="cat-bullet" style="background:#5b9bff"></span>Q2 earnings ~July 22, 2026</div></div>
-    </div>
-
-    <div class="card-risk">
-      <span class="risk-icon">⚠</span>
-      <span class="risk-body">Brazil's macro deterioration (fiscal imbalance, currency weakness, rising rates) could trigger credit losses and margin compression that overwhelm any near-term operational improvements.</span>
-    </div>
-
-  </div>
-</article>
-<article class="card" style="--ac:#ff6b35">
-  <div class="card-stripe"></div>
-  <div class="card-body">
-
-    <div class="card-head">
-      <div class="card-id">
-        <div class="card-rank">#7</div>
-        <div class="card-ticker">PEB</div>
-        <div class="card-co">Pebblebrook Hotel Trust</div>
-        
-        <div class="card-meta">
-          <span class="meta-role">COB</span>
-          <span class="meta-dot">·</span>
-          <span class="meta-date">Trade 2026-06-08</span>
-          <span class="sent s-neut">NEUTRAL</span>
-          
-        </div>
-      </div>
-      <div class="card-ring"><div class="ring-outer" data-score="32.0" data-color="#ff6b35">
-  <div class="ring-track"></div>
-  <div class="ring-fill"></div>
-  <div class="ring-text">
-    <span class="ring-num" style="color:#ff6b35">32</span>
-    <span class="ring-den">/100</span>
-    <span class="ring-lbl" style="color:#ff6b35">WEAK</span>
-  </div>
-</div></div>
-    </div>
-
-    <div class="card-prices">
-      <span class="px-val">$17.23</span>
-      <span class="px-lbl">insider buy</span>
-      <span class="px-arr">→</span>
-      <span class="px-val">$16.08</span>
-      <span class="px-lbl">now</span>
-      <span class="px-chg" style="color:#ff4757">▼6.6%</span>
-    </div>
-
-    <div class="card-metrics">
-      <div class="m"><span class="mv" style="color:#00ffd4">+13.2%</span><span class="mk">vs EMA50</span></div>
-      <div class="m"><span class="mv" style="color:#00ffd4">+32.4%</span><span class="mk">vs EMA200</span></div>
-      <div class="m"><span class="mv" style="color:#00ffd4">+3.8%</span><span class="mk">5d velocity</span></div>
-      <div class="m"><span class="mv">13.1%</span><span class="mk">short float</span></div>
-      <div class="m"><span class="mv">$1.4M</span><span class="mk">total bought</span></div>
-      <div class="m"><span class="mv">+2%</span><span class="mk">Δ ownership</span></div>
-    </div>
-
-    <div class="card-news">
-      <blockquote class="news-hl">"Pebblebrook Hotel Trust CEO Makes Significant Open-Market Share Purchases"</blockquote>
-      <p class="news-body">Pebblebrook Hotel Trust's Chairman and CEO, Jon E. Bortz, recently purchased a substantial amount of company stock, acquiring 80,000 common shares in multiple open-market transactions between June 8 and June 11, 2026, at prices ranging from $16.84 to $17.73 per share. This insider buying activity, totaling approximately $1.38 million, signals confidence from leadership. Additionally, the company announced it will release its second-quarter 2026 financial results on July 29, 2026, followed by a conference call on July 30, 2026, which will provide further insights into its performance and outlook.</p>
-      <div class="news-srcs"><a href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEwE8tKwTeEFAxQteWhAVjO15qmZ-Fit4di660TwbIfHGkrsZEA_eop9Sj8gyltWSi1n95nsRt45qvnUznKm8RVPo2qVsXen53yEMecGyCB71OFnqNsCVBADNFW606Ckg4m1xlHVq7jUtqrCdkuUniwFlZwqLGhtx3z2ZDeQWPMhTFV9Kct8nsc_msvbcjNRTY4Vd6t1e2UbqiWeFlNZZY" target="_blank" class="src-a">↗ src 1</a><a href="https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGyPRUP37mzxeJJrsDQPoWDWwgbPRZw6nj-S7cR0p51SdyhRgSLBsyzqioSgPIo1mNids3wnGZH0mwoUxHz7bm0H0kpCietzsnDutg2kujDVhuMXmzkzPtls7cYb6hqh8-UTylPmpeGbIwGagqT5UeDI01tjezuRp6NnrtnfQj1pf6kMU-4GsIRO_wllqEQapW6WU6MCjosmmKFerCwcQfekuhBD1f6r45NKg==" target="_blank" class="src-a">↗ src 2</a></div>
-    </div>
-
-    <div class="card-cats">
-      <div class="cats-label">UPCOMING CATALYSTS</div>
-      <div class="cats-grid"><div class="cat-pill" style="color:#5b9bff;background:rgba(91,155,255,0.1);border-color:rgba(91,155,255,0.35)"><span class="cat-bullet" style="background:#5b9bff"></span>Q2 2026 earnings release July 29, 2026</div><div class="cat-pill" style="color:#5b9bff;background:rgba(91,155,255,0.1);border-color:rgba(91,155,255,0.35)"><span class="cat-bullet" style="background:#5b9bff"></span>Q2 2026 earnings conference call July 30, 2026</div></div>
-    </div>
-
-    <div class="card-risk">
-      <span class="risk-icon">⚠</span>
-      <span class="risk-body">Hotel occupancy and RevPAR compression during macro slowdown or recession could undermine valuation despite insider optimism, especially given 13.1% short float indicating bearish positioning.</span>
+    <div class="col-cats">
+      <div class="cats-lbl">CATALYSTS</div>
+      <div class="cats-chips"><span class="cat-chip" style="color:#00ffd4;background:rgba(0,255,212,0.1);border-color:rgba(0,255,212,0.35)">FDA PDUFA date for ivonescimab: November 2026</span><span class="cat-chip" style="color:#5b9bff;background:rgba(91,155,255,0.1);border-color:rgba(91,155,255,0.35)">Q2 earnings — August 10</span><span class="cat-chip" style="color:#00ffd4;background:rgba(0,255,212,0.1);border-color:rgba(0,255,212,0.35)">Further Phase III trial data readouts</span></div>
+      <div class="risk-line"><span class="risk-icon">⚠</span> Single-asset biotech; trial replication risk in Western populations</div>
     </div>
 
   </div>
@@ -878,178 +379,16 @@ footer{
     <div class="hrl-l">
       <span class="htk" style="color:#2979ff">SMMT</span>
       <span class="hsi" style="color:#2979ff">BUY</span>
-      <span class="hsc">74</span>
-      <span class="hcl">⚡ CLUSTER · 3 insiders</span>
+      <span class="hsc">0</span>
+      <span class="hcl">⚡ CLUSTER · 1 insiders</span>
     </div>
     <div class="hrow-meta">
-      <span class="hm-v">$103.6M total · 3 buys</span>
-      <span class="hm-d">First: 2026-06-14&nbsp;·&nbsp;Last: 2026-06-14</span>
+      <span class="hm-v">$51.4M total · 1 buy</span>
+      <span class="hm-d">First: &nbsp;·&nbsp;Last: </span>
     </div>
     <div class="hrl-r"><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">3d</span></div><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">8d</span></div><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">15d</span></div><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">30d</span></div><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">90d</span></div></div>
   </div>
-  <div class="hrow-buys"><div class="buy-row">
-  <span class="br-date">2026-06-04</span>
-  <span class="br-name">Duggan Robert W</span>
-  <span class="br-role">Co-CEO</span>
-  <span class="br-px">$13.86</span>
-  <span class="br-qty">3,910,000 sh</span>
-  <span class="br-val">$51.4M</span>
-  <span class="br-dow">+1%</span>
-</div><div class="buy-row">
-  <span class="br-date">2026-06-04</span>
-  <span class="br-name">Zanganeh Mahkam</span>
-  <span class="br-role">Co-CEO</span>
-  <span class="br-px">$13.86</span>
-  <span class="br-qty">3,910,000 sh</span>
-  <span class="br-val">$51.4M</span>
-  <span class="br-dow">+1%</span>
-</div><div class="buy-row">
-  <span class="br-date">2026-06-04</span>
-  <span class="br-name">Soni Manmeet Singh</span>
-  <span class="br-role">COO</span>
-  <span class="br-px">$14.45</span>
-  <span class="br-qty">50,000 sh</span>
-  <span class="br-val">$722K</span>
-  <span class="br-dow">+2%</span>
-</div></div>
-</div><div class="hrow" style="border-left-color:#fbbf24">
-  <div class="hrow-hdr">
-    <div class="hrl-l">
-      <span class="htk" style="color:#fbbf24">DBGI</span>
-      <span class="hsi" style="color:#fbbf24">WATCH</span>
-      <span class="hsc">50</span>
-      
-    </div>
-    <div class="hrow-meta">
-      <span class="hm-v">$699K total · 1 buy</span>
-      <span class="hm-d">First: 2026-06-14&nbsp;·&nbsp;Last: 2026-06-14</span>
-    </div>
-    <div class="hrl-r"><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">3d</span></div><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">8d</span></div><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">15d</span></div><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">30d</span></div><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">90d</span></div></div>
-  </div>
-  <div class="hrow-buys"><div class="buy-row">
-  <span class="br-date">2026-06-10</span>
-  <span class="br-name">Davis John Hilburn IV</span>
-  <span class="br-role">CEO</span>
-  <span class="br-px">$1.13</span>
-  <span class="br-qty">618,333 sh</span>
-  <span class="br-val">$699K</span>
-  <span class="br-dow">+882%</span>
-</div></div>
-</div><div class="hrow" style="border-left-color:#fbbf24">
-  <div class="hrow-hdr">
-    <div class="hrl-l">
-      <span class="htk" style="color:#fbbf24">COSM</span>
-      <span class="hsi" style="color:#fbbf24">WATCH</span>
-      <span class="hsc">47</span>
-      
-    </div>
-    <div class="hrow-meta">
-      <span class="hm-v">$160K total · 1 buy</span>
-      <span class="hm-d">First: 2026-06-14&nbsp;·&nbsp;Last: 2026-06-14</span>
-    </div>
-    <div class="hrl-r"><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">3d</span></div><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">8d</span></div><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">15d</span></div><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">30d</span></div><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">90d</span></div></div>
-  </div>
-  <div class="hrow-buys"><div class="buy-row">
-  <span class="br-date">2026-06-10</span>
-  <span class="br-name">Siokas Grigorios</span>
-  <span class="br-role">CEO</span>
-  <span class="br-px">$0.23</span>
-  <span class="br-qty">701,447 sh</span>
-  <span class="br-val">$160K</span>
-  <span class="br-dow">+6%</span>
-</div></div>
-</div><div class="hrow" style="border-left-color:#fbbf24">
-  <div class="hrow-hdr">
-    <div class="hrl-l">
-      <span class="htk" style="color:#fbbf24">GOTU</span>
-      <span class="hsi" style="color:#fbbf24">WATCH</span>
-      <span class="hsc">43</span>
-      
-    </div>
-    <div class="hrow-meta">
-      <span class="hm-v">$447K total · 1 buy</span>
-      <span class="hm-d">First: 2026-06-14&nbsp;·&nbsp;Last: 2026-06-14</span>
-    </div>
-    <div class="hrl-r"><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">3d</span></div><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">8d</span></div><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">15d</span></div><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">30d</span></div><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">90d</span></div></div>
-  </div>
-  <div class="hrow-buys"><div class="buy-row">
-  <span class="br-date">2026-06-11</span>
-  <span class="br-name">Chen Xiangdong</span>
-  <span class="br-role">CEO</span>
-  <span class="br-px">$2.24</span>
-  <span class="br-qty">200,000 sh</span>
-  <span class="br-val">$447K</span>
-  <span class="br-dow">+3%</span>
-</div></div>
-</div><div class="hrow" style="border-left-color:#fbbf24">
-  <div class="hrow-hdr">
-    <div class="hrl-l">
-      <span class="htk" style="color:#fbbf24">NRDY</span>
-      <span class="hsi" style="color:#fbbf24">WATCH</span>
-      <span class="hsc">42</span>
-      
-    </div>
-    <div class="hrow-meta">
-      <span class="hm-v">$450K total · 1 buy</span>
-      <span class="hm-d">First: 2026-06-14&nbsp;·&nbsp;Last: 2026-06-14</span>
-    </div>
-    <div class="hrl-r"><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">3d</span></div><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">8d</span></div><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">15d</span></div><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">30d</span></div><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">90d</span></div></div>
-  </div>
-  <div class="hrow-buys"><div class="buy-row">
-  <span class="br-date">2026-06-10</span>
-  <span class="br-name">Cohn Charles K.</span>
-  <span class="br-role">CEO</span>
-  <span class="br-px">$0.94</span>
-  <span class="br-qty">477,223 sh</span>
-  <span class="br-val">$450K</span>
-  <span class="br-dow">0%</span>
-</div></div>
-</div><div class="hrow" style="border-left-color:#fbbf24">
-  <div class="hrow-hdr">
-    <div class="hrl-l">
-      <span class="htk" style="color:#fbbf24">BSBR</span>
-      <span class="hsi" style="color:#fbbf24">WATCH</span>
-      <span class="hsc">41</span>
-      
-    </div>
-    <div class="hrow-meta">
-      <span class="hm-v">$1.4M total · 1 buy</span>
-      <span class="hm-d">First: 2026-06-14&nbsp;·&nbsp;Last: 2026-06-14</span>
-    </div>
-    <div class="hrl-r"><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">3d</span></div><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">8d</span></div><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">15d</span></div><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">30d</span></div><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">90d</span></div></div>
-  </div>
-  <div class="hrow-buys"><div class="buy-row">
-  <span class="br-date">2026-06-02</span>
-  <span class="br-name">Leao Mario Roberto Opice</span>
-  <span class="br-role">CEO</span>
-  <span class="br-px">$5.30</span>
-  <span class="br-qty">259,900 sh</span>
-  <span class="br-val">$1.4M</span>
-  <span class="br-dow">+29%</span>
-</div></div>
-</div><div class="hrow" style="border-left-color:#ff6b35">
-  <div class="hrow-hdr">
-    <div class="hrl-l">
-      <span class="htk" style="color:#ff6b35">PEB</span>
-      <span class="hsi" style="color:#ff6b35">WEAK</span>
-      <span class="hsc">32</span>
-      
-    </div>
-    <div class="hrow-meta">
-      <span class="hm-v">$1.4M total · 1 buy</span>
-      <span class="hm-d">First: 2026-06-14&nbsp;·&nbsp;Last: 2026-06-14</span>
-    </div>
-    <div class="hrl-r"><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">3d</span></div><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">8d</span></div><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">15d</span></div><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">30d</span></div><div class="hr"><span style="color:var(--muted)">—</span><span class="hrl">90d</span></div></div>
-  </div>
-  <div class="hrow-buys"><div class="buy-row">
-  <span class="br-date">2026-06-08</span>
-  <span class="br-name">Bortz Jon E</span>
-  <span class="br-role">COB</span>
-  <span class="br-px">$17.23</span>
-  <span class="br-qty">80,000 sh</span>
-  <span class="br-val">$1.4M</span>
-  <span class="br-dow">+2%</span>
-</div></div>
+  <div class="hrow-buys"></div>
 </div>
 </div>
 
@@ -1064,74 +403,14 @@ footer{
       <th>+3D</th><th>+8D</th><th>+15D</th><th>+30D</th><th>+90D</th>
     </tr></thead>
     <tbody><tr>
-  <td class="td-m">2026-06-14</td>
-  <td><b style="color:#ff6b35">PEB</b></td>
-  <td style="color:#ff6b35">WEAK</td>
-  <td style="color:#ff6b35;font-weight:700">32</td>
-  <td>—</td>
-  <td class="td-m">1 buy</td>
-  <td class="td-m">$17.23</td>
-  <td class="td-m">$16.08</td>
-  <td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td>
-</tr><tr>
-  <td class="td-m">2026-06-14</td>
-  <td><b style="color:#fbbf24">BSBR</b></td>
-  <td style="color:#fbbf24">WATCH</td>
-  <td style="color:#fbbf24;font-weight:700">41</td>
-  <td>—</td>
-  <td class="td-m">1 buy</td>
-  <td class="td-m">$5.30</td>
-  <td class="td-m">$5.30</td>
-  <td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td>
-</tr><tr>
-  <td class="td-m">2026-06-14</td>
-  <td><b style="color:#fbbf24">NRDY</b></td>
-  <td style="color:#fbbf24">WATCH</td>
-  <td style="color:#fbbf24;font-weight:700">42</td>
-  <td>—</td>
-  <td class="td-m">1 buy</td>
-  <td class="td-m">$0.94</td>
-  <td class="td-m">$0.78</td>
-  <td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td>
-</tr><tr>
-  <td class="td-m">2026-06-14</td>
-  <td><b style="color:#fbbf24">GOTU</b></td>
-  <td style="color:#fbbf24">WATCH</td>
-  <td style="color:#fbbf24;font-weight:700">43</td>
-  <td>—</td>
-  <td class="td-m">1 buy</td>
-  <td class="td-m">$2.24</td>
-  <td class="td-m">$1.67</td>
-  <td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td>
-</tr><tr>
-  <td class="td-m">2026-06-14</td>
-  <td><b style="color:#fbbf24">COSM</b></td>
-  <td style="color:#fbbf24">WATCH</td>
-  <td style="color:#fbbf24;font-weight:700">47</td>
-  <td>—</td>
-  <td class="td-m">1 buy</td>
-  <td class="td-m">$0.23</td>
-  <td class="td-m">$0.25</td>
-  <td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td>
-</tr><tr>
-  <td class="td-m">2026-06-14</td>
-  <td><b style="color:#fbbf24">DBGI</b></td>
-  <td style="color:#fbbf24">WATCH</td>
-  <td style="color:#fbbf24;font-weight:700">50</td>
-  <td>—</td>
-  <td class="td-m">1 buy</td>
-  <td class="td-m">$1.13</td>
-  <td class="td-m">$0.93</td>
-  <td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td>
-</tr><tr>
-  <td class="td-m">2026-06-14</td>
+  <td class="td-m"></td>
   <td><b style="color:#2979ff">SMMT</b></td>
   <td style="color:#2979ff">BUY</td>
-  <td style="color:#2979ff;font-weight:700">74</td>
-  <td><span class="tcl">⚡ 3</span></td>
-  <td class="td-m">3 buys</td>
-  <td class="td-m">$13.86</td>
-  <td class="td-m">$15.07</td>
+  <td style="color:#2979ff;font-weight:700">0</td>
+  <td><span class="tcl">⚡ 1</span></td>
+  <td class="td-m">1 buy</td>
+  <td class="td-m">$0.00</td>
+  <td class="td-m">$0.00</td>
   <td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td>
 </tr></tbody>
   </table>
@@ -1142,7 +421,7 @@ footer{
 
 <footer>
   <span>INSIDER TRACKER — informational only · not financial advice</span>
-  <span>Generated 2026-06-14 16:15 MST</span>
+  <span>Generated 2026-06-14 19:12 MST</span>
 </footer>
 
 </div>
