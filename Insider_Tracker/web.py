@@ -224,7 +224,11 @@ def _history(picks):
   <span>PRICE</span><span>SHARES</span><span>VALUE</span><span>ΔOWN</span>
 </div>"""
 
-    out = ""
+    HIST_HDR = ('<div class="hist-hdr">'
+                '<span>SIGNAL</span><span>SUMMARY</span>'
+                '<span>3D</span><span>8D</span><span>15D</span><span>30D</span><span>90D</span>'
+                '</div>')
+    out = HIST_HDR
     for p in sorted_picks:
         sc      = p.get("score") or 0
         st      = p.get("score_stars") or 3
@@ -243,12 +247,14 @@ def _history(picks):
         else:
             date_chip = ""
 
-        rets = ""
+        ret_cells = ""
         for col2, lp in [("price_3d","3d"),("price_8d","8d"),("price_15d","15d"),
                           ("price_30d","30d"),("price_90d","90d")]:
             r, rs = _ret(bp, p.get(col2))
             rc = "#00ffd4" if r and r > 0 else "#ff4757" if r and r < 0 else "var(--muted)"
-            rets += f'<div class="hr"><span style="color:{rc}">{rs}</span><span class="hrl">{lp}</span></div>'
+            ret_cells += (f'<div class="h-ret">'
+                          f'<span class="h-ret-val" style="color:{rc}">{rs}</span>'
+                          f'<span class="h-ret-lbl">{lp}</span></div>')
 
         # Purchases — newest first
         purchases = []
@@ -267,12 +273,14 @@ def _history(picks):
         date_label  = (f'Latest: {latest_date} · {n_buys} buys since {oldest_date}'
                        if n_buys > 1 else f'Trade: {latest_date}')
 
-        # Badges: always show CLUSTER if applicable; add buy-count badge when
-        # n_buys > buyers (some insiders bought multiple times)
+        # Dual badges: compute distinct insiders from purchases list (more accurate
+        # than the stored distinct_buyers field which may lag).
+        # Show repeat badge whenever total purchases > distinct insiders.
+        unique_ins = len({pur.get("insider_name","") for pur in purchases}) if purchases else buyers
         badges = ""
         if tag == "CLUSTER":
-            badges += f'<span class="hcl">⚡ CLUSTER · {buyers} insiders</span>'
-            if n_buys > buyers:
+            badges += f'<span class="hcl">⚡ CLUSTER · {unique_ins} insiders</span>'
+            if n_buys > unique_ins:
                 badges += f'<span class="hcl repeat-tag">🔄 {n_buys} buys</span>'
         elif tag == "REPEAT":
             badges += f'<span class="hcl repeat-tag">🔄 REPEAT · {n_buys} buys</span>'
@@ -311,7 +319,7 @@ def _history(picks):
       <span class="hm-v">{_fmtval(total_val)} total · {n_buys} buy{"s" if n_buys != 1 else ""}</span>
       <span class="hm-d">{date_label}</span>
     </div>
-    <div class="hrl-r">{rets}</div>
+    {ret_cells}
   </div>
   <div class="hrow-buys">{buy_rows}</div>
 </div>"""
@@ -574,30 +582,38 @@ body::before{
 .hg-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .hg-date{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--text)}
 .hg-cnt{font-family:var(--mono);font-size:11px;color:var(--muted)}
+/* ── History: sticky column header — same grid as each row ── */
+.hist-hdr{
+  font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.8px;
+  color:var(--muted);opacity:.5;text-transform:uppercase;
+  display:grid;
+  grid-template-columns:290px 1fr 60px 60px 64px 64px 64px;
+  align-items:center;gap:0 10px;
+  padding:6px 19px 8px;
+  border-bottom:1px solid var(--bdr);
+  margin-bottom:6px;
+}
+.hist-hdr span:nth-child(n+3){text-align:center}
+/* Each card is flex-column; hrow-hdr inside uses same 7-col grid */
 .hrow{
-  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  display:flex;flex-direction:column;
   background:var(--card);
   backdrop-filter:blur(12px);
   border:1px solid var(--bdr);border-left:3px solid;
-  border-radius:10px;padding:12px 16px;margin-bottom:6px;
+  border-radius:10px;margin-bottom:6px;overflow:hidden;
 }
-.hrl-l{display:flex;align-items:center;gap:10px;min-width:210px}
-.htk{font-family:var(--mono);font-size:20px;font-weight:800;min-width:55px}
+.hrl-l{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.htk{font-family:var(--mono);font-size:20px;font-weight:800}
 .hsi{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:1px}
 .hsc{font-family:var(--mono);font-size:12px;color:var(--muted)}
 .hcl{
   font-family:var(--mono);font-size:10px;color:var(--amber);
   background:rgba(251,191,36,0.1);padding:2px 7px;border-radius:4px;
 }
-.hrl-p{
-  display:flex;align-items:center;gap:6px;
-  font-family:var(--mono);font-size:12px;color:var(--muted);
-}
-.hp-a{opacity:.4}
-.hrl-r{display:flex;gap:14px;margin-left:auto;flex-wrap:wrap}
-.hr{display:flex;flex-direction:column;align-items:center;gap:2px}
-.hr span{font-family:var(--mono);font-size:12px;font-weight:700}
-.hrl{font-size:10px;color:var(--muted);letter-spacing:.5px}
+/* Per-period return cells — placed directly as grid children */
+.h-ret{display:flex;flex-direction:column;align-items:center;gap:2px}
+.h-ret-val{font-family:var(--mono);font-size:12px;font-weight:700}
+.h-ret-lbl{font-size:9px;color:var(--muted);letter-spacing:.5px}
 
 /* ── Performance ── */
 .pstats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
@@ -625,14 +641,17 @@ body::before{
 .td-m{font-family:var(--mono);font-size:12px;color:var(--muted)}
 .tcl{font-family:var(--mono);font-size:10px;color:var(--amber)}
 
-/* ── History row v2: header + purchases sub-list ── */
+/* ── History row v3: 7-column grid matches hist-hdr exactly ── */
 .hrow-hdr{
-  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
-  padding-bottom:10px;border-bottom:1px solid var(--bdr);margin-bottom:8px;
+  display:grid;
+  grid-template-columns:290px 1fr 60px 60px 64px 64px 64px;
+  align-items:center;gap:0 10px;
+  padding:12px 16px;
+  border-bottom:1px solid var(--bdr);
 }
 .hrow-meta{
-  display:flex;flex-direction:column;gap:3px;
-  font-size:11px;color:var(--muted);margin-left:4px;
+  display:flex;flex-direction:column;gap:2px;
+  font-size:11px;color:var(--muted);
 }
 .hm-v{font-family:var(--mono);color:var(--text);font-weight:600}
 .hm-d{letter-spacing:.2px}
@@ -642,7 +661,7 @@ body::before{
 .today-chip{background:rgba(0,255,212,0.1);color:var(--teal);border-color:rgba(0,255,212,0.35)}
 
 /* Individual purchase rows — strict grid so columns always align */
-.hrow-buys{display:flex;flex-direction:column;margin-top:8px;border-top:1px solid var(--bdr);padding-top:6px}
+.hrow-buys{display:flex;flex-direction:column;padding:4px 0 6px}
 .buy-hdr,.buy-row{display:grid;grid-template-columns:90px 1fr 80px 80px 110px 75px 52px;align-items:center;gap:0 10px;padding:4px 10px}
 .buy-hdr{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.8px;color:var(--muted);opacity:.6;margin-bottom:2px}
 .buy-row{border-radius:6px;font-size:12px}
@@ -824,5 +843,8 @@ def write_html(events, all_picks, path=None):
         path = DOCS_DIR / "index.html"
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(generate_html(events, all_picks), encoding="utf-8")
+    return path
+dir(parents=True, exist_ok=True)
     path.write_text(generate_html(events, all_picks), encoding="utf-8")
     return path
