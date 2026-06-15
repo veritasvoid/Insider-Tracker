@@ -19,7 +19,7 @@ import db
 from scrape import run as scrape_run, run_history as scrape_history
 
 
-COLLAPSE_WINDOW_DAYS = 10   # same-insider buys within this window → one event
+COLLAPSE_WINDOW_DAYS = 5    # same-insider buys within this window → one event
 HISTORY_DAYS         = 90   # look back this many days for cluster detection
 CLUSTER_THRESHOLD    = 2    # distinct insiders needed to tag CLUSTER
 REPEAT_THRESHOLD     = 3    # same insider buying this many times → REPEAT conviction
