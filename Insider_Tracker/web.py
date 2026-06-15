@@ -143,8 +143,15 @@ def _card(e, rank):
     trade_sub = " · ".join(sub_parts)
 
     meta_parts = [f'<span class="meta-role">{role}</span>'] if role else []
-    if e.get("event_start_date"):
-        meta_parts += [f'<span class="meta-date">Trade {e.get("event_start_date")}</span>']
+    # Show most recent trade date; for REPEAT buys also note the first buy date
+    latest_trade = e.get("event_end_date") or e.get("event_start_date")
+    first_trade  = e.get("event_start_date")
+    if latest_trade:
+        if tag == "REPEAT" and first_trade and first_trade != latest_trade:
+            meta_parts += [f'<span class="meta-date">Latest {latest_trade}</span>',
+                           f'<span class="meta-date" style="color:var(--muted);font-size:11px">since {first_trade}</span>']
+        else:
+            meta_parts += [f'<span class="meta-date">Trade {latest_trade}</span>']
     if e.get("sector"):
         meta_parts += [_sector(e.get("sector"))]
     meta_html = " ".join(meta_parts)
@@ -201,12 +208,17 @@ def _history(picks):
     if not picks:
         return '<div class="empty">No history yet.</div>'
 
-    # One card per ticker, most recently seen first
-    sorted_picks = sorted(
-        picks,
-        key=lambda p: (p.get("first_seen") or p.get("run_date") or ""),
-        reverse=True
-    )
+    # Sort by most recent trade date (derived from purchases) then score
+    import json as _json2
+    def _latest_trade(p):
+        try:
+            purs = _json2.loads(p.get("purchases") or "[]")
+            dates = [x.get("trade_date","")[:10] for x in purs if x.get("trade_date")]
+            return max(dates) if dates else (p.get("last_updated") or p.get("run_date") or "")
+        except Exception:
+            return p.get("last_updated") or p.get("run_date") or ""
+
+    sorted_picks = sorted(picks, key=_latest_trade, reverse=True)
 
     out = ""
     for p in sorted_picks:
@@ -217,8 +229,6 @@ def _history(picks):
         tag     = p.get("cluster_tag", "SINGLE")
         bp      = p.get("price_at_pick")
         buyers  = p.get("distinct_buyers") or 1
-        first   = p.get("first_seen") or p.get("run_date", "")
-        last    = p.get("last_updated") or first
 
         rets = ""
         for col2, lp in [("price_3d","3d"),("price_8d","8d"),("price_15d","15d"),
@@ -227,23 +237,33 @@ def _history(picks):
             rc = "#00ffd4" if r and r > 0 else "#ff4757" if r and r < 0 else "var(--muted)"
             rets += f'<div class="hr"><span style="color:{rc}">{rs}</span><span class="hrl">{lp}</span></div>'
 
-        # Parse purchases JSON into individual buy rows
+        # Parse purchases — sorted newest first so latest buy shows at top
         purchases = []
         try:
             purchases = _json.loads(p.get("purchases") or "[]")
+            purchases.sort(key=lambda x: x.get("trade_date",""), reverse=True)
         except Exception:
             pass
 
         n_buys    = len(purchases) or 1
         total_val = p.get("total_value") or sum(pur.get("value", 0) for pur in purchases)
 
+        # Derive latest and oldest trade dates from purchases list
+        trade_dates = [x.get("trade_date","")[:10] for x in purchases if x.get("trade_date")]
+        latest_date = trade_dates[0]  if trade_dates else (p.get("last_updated") or "")
+        oldest_date = trade_dates[-1] if trade_dates else latest_date
+        if n_buys == 1:
+            date_label = f'Latest buy: {latest_date}'
+        else:
+            date_label = f'Latest: {latest_date} · {n_buys} buys since {oldest_date}'
+
         buy_rows = ""
         for pur in purchases:
             td    = (pur.get("trade_date") or "")[:10]
             name  = pur.get("insider_name", "")
             role  = pur.get("title", "").split(",")[0].strip()
-            price = pur.get("price") or 0
-            qty   = pur.get("qty") or 0
+            price = float(pur.get("price") or 0)
+            qty   = int(pur.get("qty") or 0)
             val   = pur.get("value") or 0
             delt  = pur.get("delta_own", "")
             buy_rows += f"""<div class="buy-row">
@@ -259,7 +279,7 @@ def _history(picks):
         cluster_badge = (
             f'<span class="hcl">⚡ CLUSTER · {buyers} insiders</span>'
             if tag == "CLUSTER" else
-            f'<span class="hcl" style="color:#a78bfa">🔄 REPEAT</span>'
+            f'<span class="hcl" style="color:#a78bfa">🔄 REPEAT · {n_buys} buys</span>'
             if tag == "REPEAT" else ""
         )
 
@@ -273,7 +293,7 @@ def _history(picks):
     </div>
     <div class="hrow-meta">
       <span class="hm-v">{_fmtval(total_val)} total · {n_buys} buy{"s" if n_buys != 1 else ""}</span>
-      <span class="hm-d">First: {first}&nbsp;·&nbsp;Last: {last}</span>
+      <span class="hm-d">{date_label}</span>
     </div>
     <div class="hrl-r">{rets}</div>
   </div>
