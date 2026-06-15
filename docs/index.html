@@ -180,19 +180,17 @@ body::before{
 .hg-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .hg-date{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--text)}
 .hg-cnt{font-family:var(--mono);font-size:11px;color:var(--muted)}
-/* ── History: sticky column header — same grid as each row ── */
+/* ── History: flex header — returns always flush-right ── */
 .hist-hdr{
+  display:flex;align-items:center;gap:14px;
+  padding:6px 19px 8px;
+  border-bottom:1px solid var(--bdr);margin-bottom:6px;
   font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.8px;
   color:var(--muted);opacity:.5;text-transform:uppercase;
-  display:grid;
-  grid-template-columns:290px 1fr 60px 60px 64px 64px 64px;
-  align-items:center;gap:0 10px;
-  padding:6px 19px 8px;
-  border-bottom:1px solid var(--bdr);
-  margin-bottom:6px;
 }
-.hist-hdr span:nth-child(n+3){text-align:center}
-/* Each card is flex-column; hrow-hdr inside uses same 7-col grid */
+.hist-hdr-l{flex:0 0 290px}
+.hist-hdr-m{flex:1;min-width:0}
+.hist-hdr-r{display:grid;grid-template-columns:repeat(5,64px);gap:0 8px;text-align:center}
 .hrow{
   display:flex;flex-direction:column;
   background:var(--card);
@@ -200,7 +198,7 @@ body::before{
   border:1px solid var(--bdr);border-left:3px solid;
   border-radius:10px;margin-bottom:6px;overflow:hidden;
 }
-.hrl-l{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hrl-l{flex:0 0 290px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .htk{font-family:var(--mono);font-size:20px;font-weight:800}
 .hsi{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:1px}
 .hsc{font-family:var(--mono);font-size:12px;color:var(--muted)}
@@ -208,7 +206,8 @@ body::before{
   font-family:var(--mono);font-size:10px;color:var(--amber);
   background:rgba(251,191,36,0.1);padding:2px 7px;border-radius:4px;
 }
-/* Per-period return cells — placed directly as grid children */
+/* Per-period return cells in a sub-grid, pushed to right */
+.hrow-rets{display:grid;grid-template-columns:repeat(5,64px);gap:0 8px}
 .h-ret{display:flex;flex-direction:column;align-items:center;gap:2px}
 .h-ret-val{font-family:var(--mono);font-size:12px;font-weight:700}
 .h-ret-lbl{font-size:9px;color:var(--muted);letter-spacing:.5px}
@@ -239,11 +238,9 @@ body::before{
 .td-m{font-family:var(--mono);font-size:12px;color:var(--muted)}
 .tcl{font-family:var(--mono);font-size:10px;color:var(--amber)}
 
-/* ── History row v3: 7-column grid matches hist-hdr exactly ── */
+/* ── History row header: flex — left fixed, summary grows, returns right-flush ── */
 .hrow-hdr{
-  display:grid;
-  grid-template-columns:290px 1fr 60px 60px 64px 64px 64px;
-  align-items:center;gap:0 10px;
+  display:flex;align-items:center;gap:14px;
   padding:12px 16px;
   border-bottom:1px solid var(--bdr);
 }
@@ -311,7 +308,7 @@ footer{
     </div>
   </div>
   <div class="clock">
-    <div class="clock-t" id="az-clock">Mon, Jun 15  12:05:51</div>
+    <div class="clock-t" id="az-clock">Mon, Jun 15  12:40:13</div>
     <div class="clock-z">ARIZONA TIME · MST · UTC−7</div>
   </div>
 </header>
@@ -328,7 +325,7 @@ footer{
   <div class="hero">
 <div class="hc"><div class="hc-l">Today's Picks</div><div class="hc-v">4</div><div class="hc-s">Unique tickers</div></div>
 <div class="hc"><div class="hc-l">Cluster Signals</div><div class="hc-v">0</div><div class="hc-s">Multi-insider buys</div></div>
-<div class="hc"><div class="hc-l">Top Pick</div><div class="hc-v" style="font-size:22px">NRDY&nbsp;·&nbsp;47</div><div class="hc-s">WATCH</div></div>
+<div class="hc"><div class="hc-l">Top Pick</div><div class="hc-v" style="font-size:22px">NRDY&nbsp;·&nbsp;43</div><div class="hc-s">WATCH</div></div>
 <div class="hc"><div class="hc-l">Tracked Positions</div><div class="hc-v">10</div><div class="hc-s">In performance log</div></div></div>
   <div class="sec">June 15, 2026 · Scored Picks</div>
   <div class="picks"><article class="card" style="--ac:#fbbf24">
@@ -339,7 +336,7 @@ footer{
       <div class="ci-header">
         <span class="card-rank">#1</span>
         <span class="card-ticker">NRDY</span>
-        <span class="sent s-bull">BULLISH</span>
+        <span class="sent s-neut">NEUTRAL</span>
       </div>
       <div class="card-co">Nerdy Inc.</div>
       <div class="b1-meta"><span class="meta-role">CEO</span> <span class="meta-date">Latest 2026-06-12</span> <span class="meta-date" style="color:var(--muted);font-size:11px">since 2026-06-10</span></div>
@@ -351,11 +348,11 @@ footer{
     </div>
 
     <div class="col-score">
-      <div class="ring-outer" data-score="47.0" data-color="#fbbf24">
+      <div class="ring-outer" data-score="43.0" data-color="#fbbf24">
   <div class="ring-track"></div>
   <div class="ring-fill"></div>
   <div class="ring-text">
-    <span class="ring-num" style="color:#fbbf24">47</span>
+    <span class="ring-num" style="color:#fbbf24">43</span>
     <span class="ring-den">/100</span>
     <span class="ring-lbl" style="color:#fbbf24">WATCH</span>
   </div>
@@ -370,14 +367,14 @@ footer{
     </div>
 
     <div class="col-news">
-      <div class="news-line"><span class="news-hl">"CEO doubles down with $700K+ stock purchase amid 20% decline from moving average"</span></div>
-      <p class="news-body">Nerdy Inc., an online tutoring and learning platform, has seen its stock significantly underperform its 200-day trend. The CEO's substantial insider buy at deeply depressed levels signals conviction in company fundamentals and potential turnaround, suggesting management believes the current valuation does not reflect intrinsic value. This vote of confidence may indicate stabilization efforts or upcoming catalysts the market has overlooked.</p>
+      <div class="news-line"><span class="news-hl">"CEO doubles down with $700K purchase as stock trades 20.6% below 200-day average"</span></div>
+      <p class="news-body">Nerdy Inc. is an online tutoring and test prep platform facing significant headwinds, with shares deeply depressed relative to intermediate trend. The CEO's substantial repeat purchase at $0.96 suggests management confidence in fundamental value despite recent weakness, though the stock's prolonged underperformance indicates structural or operational challenges that insider conviction alone may not reverse.</p>
     </div>
 
     <div class="col-cats">
       <div class="cats-lbl">CATALYSTS</div>
-      <div class="cats-chips"><span class="cat-chip" style="color:#5b9bff;background:rgba(91,155,255,0.1);border-color:rgba(91,155,255,0.35)">Q3/Q4 earnings results showing revenue growth or path to profitability</span><span class="cat-chip" style="color:#fbbf24;background:rgba(251,191,36,0.1);border-color:rgba(251,191,36,0.35)">Improved unit economics or customer acquisition cost metrics</span><span class="cat-chip" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)">Partnership announcements or market expansion initiatives</span><span class="cat-chip" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)">Strategic investor participation or institutional buying</span><span class="cat-chip" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)">Achievement of EBITDA or cash flow milestones</span></div>
-      <div class="risk-line"><span class="risk-icon">⚠</span> High short float (21.2%) and persistent losses create downside risk if Q3/Q4 earnings miss or path to profitability remains elusive, triggering capitulation and a further washout below CEO's buy price.</div>
+      <div class="cats-chips"><span class="cat-chip" style="color:#5b9bff;background:rgba(91,155,255,0.1);border-color:rgba(91,155,255,0.35)">Quarterly earnings report and guidance revision</span><span class="cat-chip" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)">User growth or retention metrics improvement</span><span class="cat-chip" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)">Margin expansion from cost restructuring initiatives</span><span class="cat-chip" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)">Strategic partnerships or market expansion announcements</span><span class="cat-chip" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)">Broader K-12 education technology sector recovery</span></div>
+      <div class="risk-line"><span class="risk-icon">⚠</span> Structural decline in ed-tech demand post-pandemic combined with 21.2% short float creates downside tail risk if Q-quarter earnings miss or guidance disappoints further.</div>
     </div>
 
   </div>
@@ -390,7 +387,7 @@ footer{
       <div class="ci-header">
         <span class="card-rank">#2</span>
         <span class="card-ticker">IBP</span>
-        <span class="sent s-bull">BULLISH</span>
+        <span class="sent s-neut">NEUTRAL</span>
       </div>
       <div class="card-co">Installed Building Products, Inc.</div>
       <div class="b1-meta"><span class="meta-role">EVP</span> <span class="meta-date">Trade 2026-06-11</span></div>
@@ -402,11 +399,11 @@ footer{
     </div>
 
     <div class="col-score">
-      <div class="ring-outer" data-score="45.0" data-color="#fbbf24">
+      <div class="ring-outer" data-score="41.0" data-color="#fbbf24">
   <div class="ring-track"></div>
   <div class="ring-fill"></div>
   <div class="ring-text">
-    <span class="ring-num" style="color:#fbbf24">45</span>
+    <span class="ring-num" style="color:#fbbf24">41</span>
     <span class="ring-den">/100</span>
     <span class="ring-lbl" style="color:#fbbf24">WATCH</span>
   </div>
@@ -421,14 +418,14 @@ footer{
     </div>
 
     <div class="col-news">
-      <div class="news-line"><span class="news-hl">"EVP insider purchase at $200.62 amid 25% pullback from 200-day moving average"</span></div>
-      <p class="news-body">Installed Building Products is a leading insulation and building products manufacturer serving residential and commercial construction markets. This insider buy at a significant discount to recent trading levels signals management confidence that the stock is oversold, particularly given the 25% decline versus the 200-day average, though the negative 5-day momentum suggests near-term headwinds persist.</p>
+      <div class="news-line"><span class="news-hl">"EVP insider purchase of $198.6K amid 25% decline from 200-day average suggests potential bottom-fishing opportunity"</span></div>
+      <p class="news-body">Installed Building Products is an insulation materials supplier serving residential and commercial construction markets. This executive-level purchase at depressed valuations may signal management confidence in business fundamentals, though the stock's significant underperformance versus its moving average indicates recent headwinds—likely driven by construction market slowdown or margin pressures.</p>
     </div>
 
     <div class="col-cats">
       <div class="cats-lbl">CATALYSTS</div>
-      <div class="cats-chips"><span class="cat-chip" style="color:#5b9bff;background:rgba(91,155,255,0.1);border-color:rgba(91,155,255,0.35)">Q3/Q4 earnings reports and guidance updates</span><span class="cat-chip" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)">Housing starts and residential construction data releases</span><span class="cat-chip" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)">Commercial real estate and non-residential construction trends</span><span class="cat-chip" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)">Inflation/material cost trends and gross margin recovery</span><span class="cat-chip" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)">Interest rate policy announcements affecting construction demand</span></div>
-      <div class="risk-line"><span class="risk-icon">⚠</span> Housing market contraction driven by elevated mortgage rates and affordability crisis could reverse near-term, making the 25% discount illusory if earnings guidance disappoints in Q3/Q4.</div>
+      <div class="cats-chips"><span class="cat-chip" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)">Housing starts and new construction data releases</span><span class="cat-chip" style="color:#5b9bff;background:rgba(91,155,255,0.1);border-color:rgba(91,155,255,0.35)">Company earnings reports and guidance revisions</span><span class="cat-chip" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)">Federal Reserve interest rate decisions affecting construction financing</span><span class="cat-chip" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)">Quarterly gross margin trends and pricing power</span><span class="cat-chip" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)">Commercial construction spending indicators</span></div>
+      <div class="risk-line"><span class="risk-icon">⚠</span> Further deterioration in housing starts or commercial construction spending could drive earnings down sharply, making the insider purchase a value trap rather than a reversal signal.</div>
     </div>
 
   </div>
@@ -453,11 +450,11 @@ footer{
     </div>
 
     <div class="col-score">
-      <div class="ring-outer" data-score="31.0" data-color="#ff6b35">
+      <div class="ring-outer" data-score="33.0" data-color="#ff6b35">
   <div class="ring-track"></div>
   <div class="ring-fill"></div>
   <div class="ring-text">
-    <span class="ring-num" style="color:#ff6b35">31</span>
+    <span class="ring-num" style="color:#ff6b35">33</span>
     <span class="ring-den">/100</span>
     <span class="ring-lbl" style="color:#ff6b35">WEAK</span>
   </div>
@@ -472,14 +469,14 @@ footer{
     </div>
 
     <div class="col-news">
-      <div class="news-line"><span class="news-hl">"NewtekOne President purchases $156K in stock amid mixed momentum signals"</span></div>
-      <p class="news-body">NewtekOne is a business development company providing small business lending and financial services. The President's substantial insider purchase at $14.21/share signals conviction in company value despite recent 5-day weakness, though the buy occurs when price is elevated 9.8% above the 200-day moving average, which may reflect opportunistic rather than contrarian timing.</p>
+      <div class="news-line"><span class="news-hl">"NewtekOne President purchases $156K in stock at $14.21/share amid mixed momentum signals"</span></div>
+      <p class="news-body">NewtekOne is a business development company providing lending and financial services to small/middle-market enterprises. The President's substantial personal investment suggests confidence in the company's fundamentals despite recent 5-day weakness, though the stock remains elevated versus its 200-day trend, warranting caution on near-term momentum.</p>
     </div>
 
     <div class="col-cats">
       <div class="cats-lbl">CATALYSTS</div>
-      <div class="cats-chips"><span class="cat-chip" style="color:#5b9bff;background:rgba(91,155,255,0.1);border-color:rgba(91,155,255,0.35)">Quarterly earnings announcements and net investment income trends</span><span class="cat-chip" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)">Changes in small business lending demand or credit quality metrics</span><span class="cat-chip" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)">Portfolio company performance updates</span><span class="cat-chip" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)">Interest rate environment shifts affecting lending margins</span></div>
-      <div class="risk-line"><span class="risk-icon">⚠</span> As a BDC, NewtekOne's returns are highly sensitive to interest rate cuts and credit deterioration in its SMB lending portfolio; a recession-driven spike in loan losses would erode NII and distribute valuations sharply.</div>
+      <div class="cats-chips"><span class="cat-chip" style="color:#5b9bff;background:rgba(91,155,255,0.1);border-color:rgba(91,155,255,0.35)">Quarterly earnings announcement and net investment income trends</span><span class="cat-chip" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)">Originations and portfolio performance updates</span><span class="cat-chip" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)">Changes in interest rate environment affecting lending spreads</span><span class="cat-chip" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)">Dividend sustainability and payment announcements</span></div>
+      <div class="risk-line"><span class="risk-icon">⚠</span> BDC valuations are highly sensitive to rate cuts; if Fed maintains hawkish stance, lending spreads compress and NII declines, eroding the dividend that justifies the insider's purchase thesis.</div>
     </div>
 
   </div>
@@ -504,11 +501,11 @@ footer{
     </div>
 
     <div class="col-score">
-      <div class="ring-outer" data-score="28.0" data-color="#ff6b35">
+      <div class="ring-outer" data-score="29.0" data-color="#ff6b35">
   <div class="ring-track"></div>
   <div class="ring-fill"></div>
   <div class="ring-text">
-    <span class="ring-num" style="color:#ff6b35">28</span>
+    <span class="ring-num" style="color:#ff6b35">29</span>
     <span class="ring-den">/100</span>
     <span class="ring-lbl" style="color:#ff6b35">WEAK</span>
   </div>
@@ -523,14 +520,14 @@ footer{
     </div>
 
     <div class="col-news">
-      <div class="news-line"><span class="news-hl">"ORBS CEO purchases nearly $184k in stock at $0.92, signaling confidence amid micro-cap volatility"</span></div>
-      <p class="news-body">Eightco Holdings operates as a micro-cap enterprise with limited recent public disclosure visibility. The CEO's personal investment of $183,960 represents a meaningful commitment of capital and typically signals insider confidence in near-term prospects or valuation support. This buy occurs as the stock shows modest positive momentum, suggesting the executive sees value at current levels.</p>
+      <div class="news-line"><span class="news-hl">"CEO purchases nearly 200k shares at $0.92, signaling confidence in turnaround potential"</span></div>
+      <p class="news-body">Eightco Holdings (ORBS) trades at historically depressed levels, and the CEO's $184k personal investment suggests conviction in upcoming value realization. The single large purchase indicates management believes the stock is undervalued relative to near-term catalysts or operational improvements.</p>
     </div>
 
     <div class="col-cats">
       <div class="cats-lbl">CATALYSTS</div>
-      <div class="cats-chips"><span class="cat-chip" style="color:#5b9bff;background:rgba(91,155,255,0.1);border-color:rgba(91,155,255,0.35)">Quarterly earnings release or financial results announcement</span><span class="cat-chip" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)">Partnership or business development announcements</span><span class="cat-chip" style="color:#5b9bff;background:rgba(91,155,255,0.1);border-color:rgba(91,155,255,0.35)">Revenue inflection or client wins disclosure</span><span class="cat-chip" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)">Strategic restructuring or operational updates</span></div>
-      <div class="risk-line"><span class="risk-icon">⚠</span> Micro-cap illiquidity, minimal financial transparency, and absence of near-term catalysts create elevated execution risk and potential for sharp downside if insider optimism fails to materialize in quarterly results.</div>
+      <div class="cats-chips"><span class="cat-chip" style="color:#5b9bff;background:rgba(91,155,255,0.1);border-color:rgba(91,155,255,0.35)">Quarterly earnings report and guidance revision</span><span class="cat-chip" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)">Announcement of strategic partnerships or asset sales</span><span class="cat-chip" style="color:#8892a4;background:rgba(136,146,164,0.1);border-color:rgba(136,146,164,0.25)">Operational restructuring results or cost reduction initiatives</span><span class="cat-chip" style="color:#5b9bff;background:rgba(91,155,255,0.1);border-color:rgba(91,155,255,0.35)">Revenue growth acceleration in core business segments</span></div>
+      <div class="risk-line"><span class="risk-icon">⚠</span> Penny-stock liquidity and high leverage to sentiment shifts; CEO's $184k buy could reflect desperation or incomplete information about deteriorating fundamentals not yet public.</div>
     </div>
 
   </div>
@@ -539,20 +536,20 @@ footer{
 
 <div id="t-history" class="pane">
   <div class="sec">All Picks · Most Recent First</div>
-  <div class="hist-hdr"><span>SIGNAL</span><span>SUMMARY</span><span>3D</span><span>8D</span><span>15D</span><span>30D</span><span>90D</span></div><div class="hrow" style="border-left-color:#fbbf24">
+  <div class="hist-hdr"><div class="hist-hdr-l">SIGNAL</div><div class="hist-hdr-m">SUMMARY</div><div class="hist-hdr-r"><span>3D</span><span>8D</span><span>15D</span><span>30D</span><span>90D</span></div></div><div class="hrow" style="border-left-color:#fbbf24">
   <div class="hrow-hdr">
     <div class="hrl-l">
       <span class="h-alerted today-chip">TODAY</span>
       <span class="htk" style="color:#fbbf24">NRDY</span>
       <span class="hsi" style="color:#fbbf24">WATCH</span>
-      <span class="hsc">47</span>
+      <span class="hsc">43</span>
       <span class="hcl repeat-tag">🔄 REPEAT · 3 buys</span>
     </div>
     <div class="hrow-meta">
       <span class="hm-v">$701K total · 3 buys</span>
       <span class="hm-d">Latest: 2026-06-12 · 3 buys since 2026-06-10</span>
     </div>
-    <div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">3d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">8d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">15d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">30d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">90d</span></div>
+    <div class="hrow-rets"><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">3d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">8d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">15d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">30d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">90d</span></div></div>
   </div>
   <div class="hrow-buys"><div class="buy-hdr">
   <span>DATE</span><span>INSIDER</span><span>ROLE</span>
@@ -588,14 +585,14 @@ footer{
       <span class="h-alerted today-chip">TODAY</span>
       <span class="htk" style="color:#fbbf24">IBP</span>
       <span class="hsi" style="color:#fbbf24">WATCH</span>
-      <span class="hsc">45</span>
+      <span class="hsc">41</span>
       
     </div>
     <div class="hrow-meta">
       <span class="hm-v">$199K total · 1 buy</span>
       <span class="hm-d">Trade: 2026-06-11</span>
     </div>
-    <div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">3d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">8d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">15d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">30d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">90d</span></div>
+    <div class="hrow-rets"><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">3d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">8d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">15d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">30d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">90d</span></div></div>
   </div>
   <div class="hrow-buys"><div class="buy-hdr">
   <span>DATE</span><span>INSIDER</span><span>ROLE</span>
@@ -615,14 +612,14 @@ footer{
       <span class="h-alerted today-chip">TODAY</span>
       <span class="htk" style="color:#ff6b35">NEWT</span>
       <span class="hsi" style="color:#ff6b35">WEAK</span>
-      <span class="hsc">31</span>
+      <span class="hsc">33</span>
       
     </div>
     <div class="hrow-meta">
       <span class="hm-v">$156K total · 1 buy</span>
       <span class="hm-d">Trade: 2026-06-15</span>
     </div>
-    <div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">3d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">8d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">15d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">30d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">90d</span></div>
+    <div class="hrow-rets"><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">3d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">8d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">15d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">30d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">90d</span></div></div>
   </div>
   <div class="hrow-buys"><div class="buy-hdr">
   <span>DATE</span><span>INSIDER</span><span>ROLE</span>
@@ -642,14 +639,14 @@ footer{
       <span class="h-alerted today-chip">TODAY</span>
       <span class="htk" style="color:#ff6b35">ORBS</span>
       <span class="hsi" style="color:#ff6b35">WEAK</span>
-      <span class="hsc">28</span>
+      <span class="hsc">29</span>
       
     </div>
     <div class="hrow-meta">
       <span class="hm-v">$184K total · 1 buy</span>
       <span class="hm-d">Trade: 2026-06-11</span>
     </div>
-    <div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">3d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">8d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">15d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">30d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">90d</span></div>
+    <div class="hrow-rets"><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">3d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">8d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">15d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">30d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">90d</span></div></div>
   </div>
   <div class="hrow-buys"><div class="buy-hdr">
   <span>DATE</span><span>INSIDER</span><span>ROLE</span>
@@ -676,7 +673,7 @@ footer{
       <span class="hm-v">$103.6M total · 3 buys</span>
       <span class="hm-d">Latest: 2026-06-04 · 3 buys since 2026-06-04</span>
     </div>
-    <div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">3d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">8d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">15d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">30d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">90d</span></div>
+    <div class="hrow-rets"><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">3d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">8d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">15d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">30d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">90d</span></div></div>
   </div>
   <div class="hrow-buys"><div class="buy-hdr">
   <span>DATE</span><span>INSIDER</span><span>ROLE</span>
@@ -719,7 +716,7 @@ footer{
       <span class="hm-v">$699K total · 1 buy</span>
       <span class="hm-d">Trade: 2026-06-10</span>
     </div>
-    <div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">3d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">8d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">15d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">30d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">90d</span></div>
+    <div class="hrow-rets"><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">3d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">8d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">15d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">30d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">90d</span></div></div>
   </div>
   <div class="hrow-buys"><div class="buy-hdr">
   <span>DATE</span><span>INSIDER</span><span>ROLE</span>
@@ -746,7 +743,7 @@ footer{
       <span class="hm-v">$160K total · 1 buy</span>
       <span class="hm-d">Trade: 2026-06-10</span>
     </div>
-    <div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">3d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">8d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">15d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">30d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">90d</span></div>
+    <div class="hrow-rets"><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">3d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">8d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">15d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">30d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">90d</span></div></div>
   </div>
   <div class="hrow-buys"><div class="buy-hdr">
   <span>DATE</span><span>INSIDER</span><span>ROLE</span>
@@ -773,7 +770,7 @@ footer{
       <span class="hm-v">$447K total · 1 buy</span>
       <span class="hm-d">Trade: 2026-06-11</span>
     </div>
-    <div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">3d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">8d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">15d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">30d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">90d</span></div>
+    <div class="hrow-rets"><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">3d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">8d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">15d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">30d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">90d</span></div></div>
   </div>
   <div class="hrow-buys"><div class="buy-hdr">
   <span>DATE</span><span>INSIDER</span><span>ROLE</span>
@@ -800,7 +797,7 @@ footer{
       <span class="hm-v">$1.4M total · 1 buy</span>
       <span class="hm-d">Trade: 2026-06-02</span>
     </div>
-    <div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">3d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">8d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">15d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">30d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">90d</span></div>
+    <div class="hrow-rets"><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">3d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">8d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">15d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">30d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">90d</span></div></div>
   </div>
   <div class="hrow-buys"><div class="buy-hdr">
   <span>DATE</span><span>INSIDER</span><span>ROLE</span>
@@ -827,7 +824,7 @@ footer{
       <span class="hm-v">$1.4M total · 1 buy</span>
       <span class="hm-d">Trade: 2026-06-08</span>
     </div>
-    <div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">3d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">8d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">15d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">30d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">90d</span></div>
+    <div class="hrow-rets"><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">3d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">8d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">15d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">30d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">90d</span></div></div>
   </div>
   <div class="hrow-buys"><div class="buy-hdr">
   <span>DATE</span><span>INSIDER</span><span>ROLE</span>
@@ -858,7 +855,7 @@ footer{
   <td class="td-m">2026-06-15</td>
   <td><b style="color:#ff6b35">ORBS</b></td>
   <td style="color:#ff6b35">WEAK</td>
-  <td style="color:#ff6b35;font-weight:700">28</td>
+  <td style="color:#ff6b35;font-weight:700">29</td>
   <td>—</td>
   <td class="td-m">1 buy</td>
   <td class="td-m">$0.92</td>
@@ -868,7 +865,7 @@ footer{
   <td class="td-m">2026-06-15</td>
   <td><b style="color:#ff6b35">NEWT</b></td>
   <td style="color:#ff6b35">WEAK</td>
-  <td style="color:#ff6b35;font-weight:700">31</td>
+  <td style="color:#ff6b35;font-weight:700">33</td>
   <td>—</td>
   <td class="td-m">1 buy</td>
   <td class="td-m">$14.21</td>
@@ -878,7 +875,7 @@ footer{
   <td class="td-m">2026-06-15</td>
   <td><b style="color:#fbbf24">IBP</b></td>
   <td style="color:#fbbf24">WATCH</td>
-  <td style="color:#fbbf24;font-weight:700">45</td>
+  <td style="color:#fbbf24;font-weight:700">41</td>
   <td>—</td>
   <td class="td-m">1 buy</td>
   <td class="td-m">$200.62</td>
@@ -916,6 +913,16 @@ footer{
   <td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td>
 </tr><tr>
   <td class="td-m">2026-06-14</td>
+  <td><b style="color:#fbbf24">NRDY</b></td>
+  <td style="color:#fbbf24">WATCH</td>
+  <td style="color:#fbbf24;font-weight:700">43</td>
+  <td>—</td>
+  <td class="td-m">3 buys</td>
+  <td class="td-m">$0.94</td>
+  <td class="td-m">$0.78</td>
+  <td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td>
+</tr><tr>
+  <td class="td-m">2026-06-14</td>
   <td><b style="color:#fbbf24">COSM</b></td>
   <td style="color:#fbbf24">WATCH</td>
   <td style="color:#fbbf24;font-weight:700">47</td>
@@ -923,16 +930,6 @@ footer{
   <td class="td-m">1 buy</td>
   <td class="td-m">$0.23</td>
   <td class="td-m">$0.25</td>
-  <td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td>
-</tr><tr>
-  <td class="td-m">2026-06-14</td>
-  <td><b style="color:#fbbf24">NRDY</b></td>
-  <td style="color:#fbbf24">WATCH</td>
-  <td style="color:#fbbf24;font-weight:700">47</td>
-  <td>—</td>
-  <td class="td-m">3 buys</td>
-  <td class="td-m">$0.94</td>
-  <td class="td-m">$0.78</td>
   <td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td>
 </tr><tr>
   <td class="td-m">2026-06-14</td>
@@ -963,7 +960,7 @@ footer{
 
 <footer>
   <span>INSIDER TRACKER — informational only · not financial advice</span>
-  <span>Generated 2026-06-15 12:05 MST</span>
+  <span>Generated 2026-06-15 12:40 MST</span>
 </footer>
 
 </div>
