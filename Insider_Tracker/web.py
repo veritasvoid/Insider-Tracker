@@ -845,6 +845,3 @@ def write_html(events, all_picks, path=None):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(generate_html(events, all_picks), encoding="utf-8")
     return path
-dir(parents=True, exist_ok=True)
-    path.write_text(generate_html(events, all_picks), encoding="utf-8")
-    return path
