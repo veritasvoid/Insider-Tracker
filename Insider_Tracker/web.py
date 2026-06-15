@@ -205,20 +205,24 @@ def _card(e, rank):
 
 def _history(picks):
     import json as _json
+    from datetime import date as _date
     if not picks:
         return '<div class="empty">No history yet.</div>'
 
-    # Sort by most recent trade date (derived from purchases) then score
-    import json as _json2
-    def _latest_trade(p):
-        try:
-            purs = _json2.loads(p.get("purchases") or "[]")
-            dates = [x.get("trade_date","")[:10] for x in purs if x.get("trade_date")]
-            return max(dates) if dates else (p.get("last_updated") or p.get("run_date") or "")
-        except Exception:
-            return p.get("last_updated") or p.get("run_date") or ""
+    today_str = str(_date.today())
 
-    sorted_picks = sorted(picks, key=_latest_trade, reverse=True)
+    # Sort by last_updated DESC (pipeline alert date), then score — so today's
+    # new detections AND tickers with fresh buys added today float to the top
+    sorted_picks = sorted(
+        picks,
+        key=lambda p: (p.get("last_updated") or p.get("run_date") or "", p.get("score") or 0),
+        reverse=True
+    )
+
+    BUY_HDR = """<div class="buy-hdr">
+  <span>DATE</span><span>INSIDER</span><span>ROLE</span>
+  <span>PRICE</span><span>SHARES</span><span>VALUE</span><span>ΔOWN</span>
+</div>"""
 
     out = ""
     for p in sorted_picks:
@@ -229,6 +233,15 @@ def _history(picks):
         tag     = p.get("cluster_tag", "SINGLE")
         bp      = p.get("price_at_pick")
         buyers  = p.get("distinct_buyers") or 1
+        alerted = p.get("last_updated") or p.get("first_seen") or p.get("run_date", "")
+
+        # Alert date chip
+        if alerted == today_str:
+            date_chip = '<span class="h-alerted today-chip">TODAY</span>'
+        elif alerted:
+            date_chip = f'<span class="h-alerted">{alerted}</span>'
+        else:
+            date_chip = ""
 
         rets = ""
         for col2, lp in [("price_3d","3d"),("price_8d","8d"),("price_15d","15d"),
@@ -237,7 +250,7 @@ def _history(picks):
             rc = "#00ffd4" if r and r > 0 else "#ff4757" if r and r < 0 else "var(--muted)"
             rets += f'<div class="hr"><span style="color:{rc}">{rs}</span><span class="hrl">{lp}</span></div>'
 
-        # Parse purchases — sorted newest first so latest buy shows at top
+        # Purchases — newest first
         purchases = []
         try:
             purchases = _json.loads(p.get("purchases") or "[]")
@@ -248,22 +261,31 @@ def _history(picks):
         n_buys    = len(purchases) or 1
         total_val = p.get("total_value") or sum(pur.get("value", 0) for pur in purchases)
 
-        # Derive latest and oldest trade dates from purchases list
         trade_dates = [x.get("trade_date","")[:10] for x in purchases if x.get("trade_date")]
-        latest_date = trade_dates[0]  if trade_dates else (p.get("last_updated") or "")
+        latest_date = trade_dates[0]  if trade_dates else ""
         oldest_date = trade_dates[-1] if trade_dates else latest_date
-        if n_buys == 1:
-            date_label = f'Latest buy: {latest_date}'
-        else:
-            date_label = f'Latest: {latest_date} · {n_buys} buys since {oldest_date}'
+        date_label  = (f'Latest: {latest_date} · {n_buys} buys since {oldest_date}'
+                       if n_buys > 1 else f'Trade: {latest_date}')
 
-        buy_rows = ""
+        # Badges: always show CLUSTER if applicable; add buy-count badge when
+        # n_buys > buyers (some insiders bought multiple times)
+        badges = ""
+        if tag == "CLUSTER":
+            badges += f'<span class="hcl">⚡ CLUSTER · {buyers} insiders</span>'
+            if n_buys > buyers:
+                badges += f'<span class="hcl repeat-tag">🔄 {n_buys} buys</span>'
+        elif tag == "REPEAT":
+            badges += f'<span class="hcl repeat-tag">🔄 REPEAT · {n_buys} buys</span>'
+
+        buy_rows = BUY_HDR
         for pur in purchases:
             td    = (pur.get("trade_date") or "")[:10]
             name  = pur.get("insider_name", "")
-            role  = pur.get("title", "").split(",")[0].strip()
-            price = float(pur.get("price") or 0)
-            qty   = int(pur.get("qty") or 0)
+            role  = (pur.get("title") or "").split(",")[0].strip()
+            try:   price = float(pur.get("price") or 0)
+            except: price = 0.0
+            try:   qty = int(pur.get("qty") or 0)
+            except: qty = 0
             val   = pur.get("value") or 0
             delt  = pur.get("delta_own", "")
             buy_rows += f"""<div class="buy-row">
@@ -276,20 +298,14 @@ def _history(picks):
   <span class="br-dow">{delt}</span>
 </div>"""
 
-        cluster_badge = (
-            f'<span class="hcl">⚡ CLUSTER · {buyers} insiders</span>'
-            if tag == "CLUSTER" else
-            f'<span class="hcl" style="color:#a78bfa">🔄 REPEAT · {n_buys} buys</span>'
-            if tag == "REPEAT" else ""
-        )
-
         out += f"""<div class="hrow" style="border-left-color:{col}">
   <div class="hrow-hdr">
     <div class="hrl-l">
+      {date_chip}
       <span class="htk" style="color:{col}">{p.get("ticker","")}</span>
       <span class="hsi" style="color:{col}">{lbl}</span>
       <span class="hsc">{sc}</span>
-      {cluster_badge}
+      {badges}
     </div>
     <div class="hrow-meta">
       <span class="hm-v">{_fmtval(total_val)} total · {n_buys} buy{"s" if n_buys != 1 else ""}</span>
@@ -621,23 +637,23 @@ body::before{
 .hm-v{font-family:var(--mono);color:var(--text);font-weight:600}
 .hm-d{letter-spacing:.2px}
 
-/* Individual purchase rows */
-.hrow-buys{display:flex;flex-direction:column;gap:4px}
-.buy-row{
-  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
-  padding:6px 10px;
-  background:rgba(255,255,255,0.025);
-  border:1px solid rgba(255,255,255,0.05);
-  border-radius:7px;
-  font-size:12px;
-}
-.br-date{font-family:var(--mono);font-size:11px;color:var(--muted);min-width:76px}
-.br-name{font-weight:600;color:var(--text);flex:1;min-width:120px}
-.br-role{font-size:11px;color:var(--muted);min-width:50px}
-.br-px{font-family:var(--mono);color:var(--teal);font-weight:700;min-width:56px}
-.br-qty{font-family:var(--mono);font-size:11px;color:var(--muted);min-width:80px}
-.br-val{font-family:var(--mono);font-weight:700;color:var(--text);min-width:56px}
-.br-dow{font-family:var(--mono);font-size:11px;color:var(--amber);min-width:44px}
+/* Alert date chip */
+.h-alerted{font-family:var(--mono);font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(136,146,164,0.12);color:var(--muted);border:1px solid rgba(136,146,164,0.2);letter-spacing:.4px}
+.today-chip{background:rgba(0,255,212,0.1);color:var(--teal);border-color:rgba(0,255,212,0.35)}
+
+/* Individual purchase rows — strict grid so columns always align */
+.hrow-buys{display:flex;flex-direction:column;margin-top:8px;border-top:1px solid var(--bdr);padding-top:6px}
+.buy-hdr,.buy-row{display:grid;grid-template-columns:90px 1fr 80px 80px 110px 75px 52px;align-items:center;gap:0 10px;padding:4px 10px}
+.buy-hdr{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.8px;color:var(--muted);opacity:.6;margin-bottom:2px}
+.buy-row{border-radius:6px;font-size:12px}
+.buy-row:nth-child(even){background:rgba(255,255,255,0.02)}
+.br-date{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.br-name{font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.br-role{font-size:11px;color:var(--muted)}
+.br-px{font-family:var(--mono);color:var(--teal);font-weight:700;text-align:right}
+.br-qty{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:right}
+.br-val{font-family:var(--mono);font-weight:700;color:var(--text);text-align:right}
+.br-dow{font-family:var(--mono);font-size:11px;color:var(--amber);text-align:right}
 
 /* ── Empty ── */
 .empty{
