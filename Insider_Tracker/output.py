@@ -181,11 +181,15 @@ def run(
     print(f"[output] DB    → {n} new pick(s) saved to picks table.")
 
     # HTML dashboard
-    from track import load_all_picks, update_picks
-    with open(config_path) as _f:
-        _cfg = yaml.safe_load(_f)
-    update_picks(_cfg)
-    all_picks = load_all_picks()
+    try:
+        from track import load_all_picks, update_picks
+        with open(config_path) as _f:
+            _cfg = yaml.safe_load(_f)
+        update_picks(_cfg)
+        all_picks = load_all_picks()
+    except Exception as _e:
+        print(f"[output] WARN  track/load_all_picks failed ({_e}); using empty history")
+        all_picks = []
     html_path = write_html(events, all_picks)
     print(f"[output] HTML  → {html_path}")
 

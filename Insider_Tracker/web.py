@@ -113,11 +113,12 @@ def _card(e, rank):
     color  = SCORE_COLORS.get(stars, "#888")
     role   = (e.get("title") or "").split(",")[0].strip()
     tag    = e.get("cluster_tag", "SINGLE")
-    buy_px = e.get("avg_price") or e.get("price") or 0
-    sf     = e.get("short_float_pct")
-    vs50   = e.get("price_vs_ema50_pct")
-    vs200  = e.get("price_vs_ema200_pct")
-    vel    = e.get("price_velocity_5d")
+    def _f(v): return float(v) if v is not None else None
+    buy_px = float(e.get("avg_price") or e.get("price") or 0)
+    sf     = _f(e.get("short_float_pct"))
+    vs50   = _f(e.get("price_vs_ema50_pct"))
+    vs200  = _f(e.get("price_vs_ema200_pct"))
+    vel    = _f(e.get("price_velocity_5d"))
 
     srcs = "".join(
         f'<a href="{u}" target="_blank" class="src-a">↗{i+1}</a>'
