@@ -233,24 +233,18 @@ def save_picks(scored_events: list[dict]) -> int:
     inserted = updated = 0
     with get_conn() as conn:
         for ticker, events in by_ticker.items():
-            # Build a purchase entry for each distinct (trade_date, insider) pair
-            new_purchases: list[dict] = []
-            seen_keys: set = set()
-            for e in events:
-                key = (e.get("event_start_date", ""), e.get("insider_name", ""))
-                if key in seen_keys:
-                    continue
-                seen_keys.add(key)
-                new_purchases.append({
-                    "trade_date":   e.get("event_start_date") or e.get("trade_date", ""),
-                    "insider_name": e.get("insider_name", ""),
-                    "title":        e.get("title", ""),
-                    "price":        e.get("avg_price") or e.get("price") or 0,
-                    "qty":          e.get("total_qty") or e.get("qty") or 0,
-                    "value":        e.get("total_value") or e.get("value") or 0,
-                    "delta_own":    e.get("delta_own", ""),
-                    "n_filings":    e.get("n_filings", 1),
-                })
+            # Pull ALL raw individual transactions from insider_buys for this ticker.
+            # This gives the full per-trade breakdown (price, qty, value per day)
+            # rather than collapsed totals — crucial for showing buy cadence in history.
+            raw_rows = conn.execute("""
+                SELECT trade_date, insider_name, title, price, qty, value, delta_own
+                FROM insider_buys
+                WHERE ticker = ?
+                  AND trade_date >= date('now', '-90 days')
+                ORDER BY trade_date DESC
+            """, (ticker,)).fetchall()
+            all_purchases = [dict(r) for r in raw_rows]
+            total_value   = sum(p.get("value") or 0 for p in all_purchases)
 
             # Use the highest-scored event for metadata fields
             best = max(events, key=lambda e: e.get("score_total") or 0)
@@ -260,16 +254,6 @@ def save_picks(scored_events: list[dict]) -> int:
             ).fetchone()
 
             if existing:
-                # Merge new purchases into the existing JSON list
-                all_purchases = _json.loads(existing["purchases"] or "[]")
-                ex_keys = {(p.get("trade_date", ""), p.get("insider_name", ""))
-                           for p in all_purchases}
-                for p in new_purchases:
-                    if (p["trade_date"], p["insider_name"]) not in ex_keys:
-                        all_purchases.append(p)
-                all_purchases.sort(key=lambda p: p.get("trade_date", ""), reverse=True)
-                total_value = sum(p.get("value") or 0 for p in all_purchases)
-
                 conn.execute("""
                     UPDATE picks SET
                         last_updated    = ?,
@@ -308,10 +292,7 @@ def save_picks(scored_events: list[dict]) -> int:
                 updated += 1
 
             else:
-                # First time seeing this ticker
-                new_purchases.sort(key=lambda p: p.get("trade_date", ""), reverse=True)
-                total_value = sum(p.get("value") or 0 for p in new_purchases)
-
+                # First time seeing this ticker — all_purchases already built above
                 conn.execute("""
                     INSERT INTO picks (
                         run_date, ticker, company,
@@ -340,7 +321,7 @@ def save_picks(scored_events: list[dict]) -> int:
                     best.get("news_headline"),
                     _json.dumps(best.get("catalysts", [])),
                     best.get("news_sentiment"),
-                    _json.dumps(new_purchases),
+                    _json.dumps(all_purchases),
                     best.get("avg_price") or best.get("price"),   # insider buy price
                     best.get("current_price"),                     # market price at detection
                     best.get("event_start_date"),
