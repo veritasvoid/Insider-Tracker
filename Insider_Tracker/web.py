@@ -92,9 +92,9 @@ def _sector(sector):
 
 # ── catalyst pills ─────────────────────────────────────────────────────────────
 
-def _cats(cats):
+def _cats_inline(cats):
     if not cats:
-        return '<p class="no-cats">No near-term catalysts identified</p>'
+        return '<span class="no-cats">No near-term catalysts</span>'
     pills = ""
     for c in cats:
         t = "def"
@@ -102,9 +102,9 @@ def _cats(cats):
             if kw in c.upper():
                 t = ct; break
         fg, bg, border = CAT_COLORS[t]
-        pills += (f'<div class="cat-pill" style="color:{fg};background:{bg};border-color:{border}">'
-                  f'<span class="cat-bullet" style="background:{fg}"></span>{c}</div>')
-    return f'<div class="cats-grid">{pills}</div>'
+        pills += (f'<span class="cat-chip" style="color:{fg};background:{bg};border-color:{border}">'
+                  f'{c}</span>')
+    return pills
 
 # ── pick card ──────────────────────────────────────────────────────────────────
 
@@ -114,85 +114,84 @@ def _card(e, rank):
     role   = (e.get("title") or "").split(",")[0].strip()
     tag    = e.get("cluster_tag", "SINGLE")
     buy_px = e.get("avg_price") or e.get("price") or 0
-    cur_px = e.get("current_price")
     sf     = e.get("short_float_pct")
     vs50   = e.get("price_vs_ema50_pct")
     vs200  = e.get("price_vs_ema200_pct")
     vel    = e.get("price_velocity_5d")
 
-    chg = ""
-    if cur_px and buy_px:
-        d = (cur_px - buy_px) / buy_px * 100
-        dc = "#00ffd4" if d > 0 else "#ff4757"
-        chg = f'<span class="px-chg" style="color:{dc}">{"▲"if d>0 else "▼"}{abs(d):.1f}%</span>'
-
     srcs = "".join(
-        f'<a href="{u}" target="_blank" class="src-a">↗ src {i+1}</a>'
+        f'<a href="{u}" target="_blank" class="src-a">↗{i+1}</a>'
         for i, u in enumerate((e.get("news_sources") or [])[:2])
     )
 
     sent = (e.get("news_sentiment") or "neutral").upper()
     scls = {"BULLISH":"s-bull","BEARISH":"s-bear"}.get(sent,"s-neut")
 
+    cluster_badge = (
+        f'<span class="cluster-tag">⚡ CLUSTER · {e.get("insider_count",2)} insiders</span>'
+        if tag == "CLUSTER" else ""
+    )
+
+    sub_parts = []
+    if e.get("total_value"):
+        sub_parts.append(_fmtval(e.get("total_value")) + " total")
+    if e.get("delta_own"):
+        sub_parts.append(f'Δ own {e.get("delta_own")}')
+    trade_sub = " · ".join(sub_parts)
+
+    meta_parts = [f'<span class="meta-role">{role}</span>'] if role else []
+    if e.get("event_start_date"):
+        meta_parts += [f'<span class="meta-date">Trade {e.get("event_start_date")}</span>']
+    if e.get("sector"):
+        meta_parts += [_sector(e.get("sector"))]
+    meta_html = " ".join(meta_parts)
+
+    hl = e.get("news_headline") or ""
+    hl_html = f'<span class="news-hl">"{hl}"</span>{" " + srcs if srcs else ""}' if hl else srcs
+
     return f"""<article class="card" style="--ac:{color}">
   <div class="card-stripe"></div>
   <div class="card-body">
 
-    <div class="card-head">
-      <div class="card-id">
-        <div class="card-rank">#{rank}</div>
-        <div class="card-ticker">{e["ticker"]}</div>
-        <div class="card-co">{e.get("company","")}</div>
-        {_sector(e.get("sector"))}
-        <div class="card-meta">
-          <span class="meta-role">{role}</span>
-          <span class="meta-dot">·</span>
-          <span class="meta-date">Trade {e.get("event_start_date","")}</span>
-          <span class="sent {scls}">{sent}</span>
-          {'<span class="cluster-tag">⚡ CLUSTER · '+str(e.get("insider_count",2))+' insiders</span>' if tag=="CLUSTER" else ""}
-        </div>
+    <div class="col-id">
+      <div class="ci-header">
+        <span class="card-rank">#{rank}</span>
+        <span class="card-ticker">{e["ticker"]}</span>
+        <span class="sent {scls}">{sent}</span>
       </div>
-      <div class="card-ring">{_ring(e.get("score_total",0), stars)}</div>
+      <div class="card-co">{e.get("company","")}</div>
+      <div class="b1-meta">{meta_html}</div>
+      <div class="ci-buyprice">
+        <span class="px-buy">${buy_px:.2f}</span>
+        <span class="px-buy-lbl">buy price</span>
+      </div>
+      {f'<div class="b2-sub">{trade_sub}</div>' if trade_sub else ""}
     </div>
 
-    <div class="card-prices">
-      <span class="px-val">${buy_px:.2f}</span>
-      <span class="px-lbl">insider buy</span>
-      <span class="px-arr">→</span>
-      <span class="px-val">${f"{cur_px:.2f}" if cur_px else "—"}</span>
-      <span class="px-lbl">now</span>
-      {chg}
+    <div class="col-score">
+      {_ring(e.get("score_total",0), stars)}
+      {f'<div class="ci-cluster">{cluster_badge}</div>' if cluster_badge else ""}
+      <div class="b2-tech">
+        <div class="tc"><span class="tk">EMA50</span><span class="tv" style="color:{_dcolor(vs50)}">{_pct(vs50)}</span></div>
+        <div class="tc"><span class="tk">EMA200</span><span class="tv" style="color:{_dcolor(vs200)}">{_pct(vs200)}</span></div>
+        <div class="tc"><span class="tk">Vel 5d</span><span class="tv" style="color:{_dcolor(vel)}">{_pct(vel)}</span></div>
+        <div class="tc"><span class="tk">Short</span><span class="tv">{f"{sf:.1f}%" if sf is not None else "—"}</span></div>
+      </div>
     </div>
 
-    <div class="card-metrics">
-      <div class="m"><span class="mv" style="color:{_dcolor(vs50)}">{_pct(vs50)}</span><span class="mk">vs EMA50</span></div>
-      <div class="m"><span class="mv" style="color:{_dcolor(vs200)}">{_pct(vs200)}</span><span class="mk">vs EMA200</span></div>
-      <div class="m"><span class="mv" style="color:{_dcolor(vel)}">{_pct(vel)}</span><span class="mk">5d velocity</span></div>
-      <div class="m"><span class="mv">{f"{sf:.1f}%" if sf is not None else "—"}</span><span class="mk">short float</span></div>
-      <div class="m"><span class="mv">{_fmtval(e.get("total_value"))}</span><span class="mk">total bought</span></div>
-      <div class="m"><span class="mv">{e.get("delta_own") or "—"}</span><span class="mk">Δ ownership</span></div>
+    <div class="col-news">
+      {f'<div class="news-line">{hl_html}</div>' if hl_html else ""}
+      {f'<p class="news-body">{e.get("news_summary","")}</p>' if e.get("news_summary") else ""}
     </div>
 
-    <div class="card-news">
-      <blockquote class="news-hl">"{e.get("news_headline","")}"</blockquote>
-      <p class="news-body">{e.get("news_summary","")}</p>
-      {'<div class="news-srcs">'+srcs+'</div>' if srcs else ""}
-    </div>
-
-    <div class="card-cats">
-      <div class="cats-label">UPCOMING CATALYSTS</div>
-      {_cats(e.get("catalysts") or [])}
-    </div>
-
-    <div class="card-risk">
-      <span class="risk-icon">⚠</span>
-      <span class="risk-body">{e.get("score_key_risk","—")}</span>
+    <div class="col-cats">
+      <div class="cats-lbl">CATALYSTS</div>
+      <div class="cats-chips">{_cats_inline(e.get("catalysts") or [])}</div>
+      <div class="risk-line"><span class="risk-icon">⚠</span> {e.get("score_key_risk","—")}</div>
     </div>
 
   </div>
 </article>"""
-
-# ── history section ────────────────────────────────────────────────────────────
 
 def _history(picks):
     import json as _json
@@ -465,164 +464,69 @@ body::before{
 .sec::after{content:'';flex:1;height:1px;background:var(--bdr)}
 
 /* ── PICK CARD ── */
-.picks{display:flex;flex-direction:column;gap:18px}
+.picks{display:flex;flex-direction:column;gap:14px}
 
 .card{
   position:relative;border-radius:16px;overflow:hidden;
   background:var(--card);
   backdrop-filter:blur(32px) saturate(170%);
   -webkit-backdrop-filter:blur(32px) saturate(170%);
-  border:1px solid rgba(var(--ac),0.18);
-  border-top:1px solid rgba(var(--ac),0.40);
   box-shadow:
     0 24px 56px rgba(0,0,0,0.5),
     0  6px 20px rgba(0,0,0,0.3),
     inset 0 1px 0 rgba(255,255,255,0.07);
 }
-/* Can't use rgba() on custom property directly; use workaround */
 .card{border-color:color-mix(in srgb,var(--ac) 22%,transparent)}
 .card{border-top-color:color-mix(in srgb,var(--ac) 44%,transparent)}
-
 .card-stripe{
   position:absolute;left:0;top:0;bottom:0;width:4px;
   background:linear-gradient(180deg,var(--ac),color-mix(in srgb,var(--ac) 20%,transparent));
 }
-
-.card-body{padding:24px 28px 20px 32px;display:flex;flex-direction:column;gap:0}
-
-/* head */
-.card-head{
-  display:flex;align-items:flex-start;justify-content:space-between;
-  gap:20px;margin-bottom:20px;
-}
-.card-id{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1}
+.card-body{display:flex;flex-direction:row;align-items:stretch;padding:0;gap:0}
+.col-id{width:220px;flex-shrink:0;padding:16px 16px 16px 26px;border-right:1px solid var(--bdr);display:flex;flex-direction:column;gap:5px}
+.ci-header{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .card-rank{font-family:var(--mono);font-size:11px;color:var(--muted)}
-.card-ticker{
-  font-family:var(--mono);font-size:46px;font-weight:800;
-  line-height:1;color:var(--text);letter-spacing:-1px;
-}
-.card-co{font-size:13px;color:var(--muted)}
-
-/* Sector tag — prominent */
-.sector-tag{
-  display:inline-flex;align-items:center;gap:5px;
-  font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:0.5px;
-  padding:6px 14px;border-radius:6px;border:1px solid;
-  width:fit-content;margin:4px 0 2px;
-}
-
-.card-meta{
-  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
-  font-size:12px;color:var(--muted);margin-top:2px;
-}
-.meta-dot{opacity:.3}
-.sent{
-  font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:1px;
-  padding:2px 8px;border-radius:4px;
-}
+.card-ticker{font-family:var(--mono);font-size:28px;font-weight:800;line-height:1;color:var(--text);letter-spacing:-0.5px}
+.card-co{font-size:12px;color:var(--muted);margin-top:2px}
+.b1-meta{display:flex;flex-direction:column;gap:3px;font-size:11px;color:var(--muted)}
+.meta-role{color:var(--muted)}
+.meta-date{font-weight:600;color:var(--text)}
+.ci-buyprice{display:flex;align-items:baseline;gap:6px;margin-top:6px}
+.px-buy{font-family:var(--mono);font-size:20px;font-weight:800;color:var(--text)}
+.px-buy-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px}
+.b2-sub{font-size:11px;color:var(--muted)}
+.sent{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:1px;padding:2px 7px;border-radius:4px}
 .s-bull{color:#00ffd4;background:rgba(0,255,212,0.1)}
 .s-bear{color:#ff4757;background:rgba(255,71,87,0.1)}
 .s-neut{color:var(--muted);background:rgba(107,120,146,0.1)}
-.cluster-tag{
-  font-family:var(--mono);font-size:11px;font-weight:700;
-  color:var(--amber);background:rgba(251,191,36,0.1);
-  border:1px solid rgba(251,191,36,0.3);border-radius:6px;
-  padding:4px 12px;width:fit-content;
-  box-shadow:0 0 14px rgba(251,191,36,0.12);
-}
-
-/* score ring */
-.card-ring{flex-shrink:0}
-.ring-outer{
-  position:relative;width:104px;height:104px;flex-shrink:0;
-  border-radius:50%;
-}
-.ring-track{
-  position:absolute;inset:0;border-radius:50%;
-  border:11px solid rgba(255,255,255,0.08);
-}
-.ring-fill{
-  position:absolute;inset:0;border-radius:50%;
-  background:conic-gradient(transparent 0deg,transparent 360deg);
-  /* mask creates donut — only outer ring visible */
-  -webkit-mask:radial-gradient(transparent 40px,black 41px);
-  mask:radial-gradient(transparent 40px,black 41px);
-}
-.ring-text{
-  position:absolute;inset:0;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  pointer-events:none;
-}
-.ring-num{font-family:var(--mono);font-size:26px;font-weight:800;line-height:1}
-.ring-den{font-family:var(--mono);font-size:10px;color:var(--muted)}
-.ring-lbl{font-family:var(--mono);font-size:9px;font-weight:800;letter-spacing:1.5px;margin-top:3px}
-
-/* prices */
-.card-prices{
-  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
-  padding:14px 0;border-top:1px solid var(--bdr);border-bottom:1px solid var(--bdr);
-  margin-bottom:16px;
-}
-.px-val{font-family:var(--mono);font-size:19px;font-weight:700;color:var(--text)}
-.px-lbl{font-size:11px;color:var(--muted)}
-.px-arr{font-size:14px;color:var(--muted)}
-.px-chg{font-family:var(--mono);font-size:14px;font-weight:700}
-
-/* metrics */
-.card-metrics{
-  display:grid;grid-template-columns:repeat(6,1fr);
-  gap:8px;margin-bottom:16px;
-}
-.m{}
-.mv{display:block;font-family:var(--mono);font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}
-.mk{display:block;font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:0.3px}
-
-/* news */
-.card-news{margin-bottom:16px}
-.news-hl{
-  font-family:var(--body);font-style:italic;font-size:14px;font-weight:600;
-  color:#c8d5e8;line-height:1.6;margin-bottom:8px;
-  border-left:3px solid color-mix(in srgb,var(--ac) 60%,transparent);
-  padding-left:12px;
-}
-.news-body{font-size:12px;color:var(--muted);line-height:1.75}
-.news-srcs{display:flex;gap:8px;margin-top:8px}
-.src-a{
-  font-family:var(--mono);font-size:10px;color:var(--muted);
-  padding:3px 10px;border:1px solid var(--bdr);border-radius:5px;
-}
+.cluster-tag{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--amber);background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);border-radius:5px;padding:2px 8px}
+.sector-tag{display:inline-flex;align-items:center;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.5px;padding:2px 7px;border-radius:4px;border:1px solid}
+.col-score{width:220px;flex-shrink:0;padding:16px;border-right:1px solid var(--bdr);display:flex;flex-direction:column;align-items:center;gap:10px}
+.ci-cluster{width:100%;text-align:center}
+.b2-tech{display:flex;flex-direction:column;gap:5px;width:100%}
+.tc{display:flex;justify-content:space-between;align-items:baseline;gap:6px}
+.tk{font-size:11px;color:var(--muted);white-space:nowrap}
+.tv{font-family:var(--mono);font-weight:700;font-size:12px;font-variant-numeric:tabular-nums}
+.ring-outer{position:relative;width:64px;height:64px;flex-shrink:0;border-radius:50%}
+.ring-track{position:absolute;inset:0;border-radius:50%;border:7px solid rgba(255,255,255,0.08)}
+.ring-fill{position:absolute;inset:0;border-radius:50%;background:conic-gradient(transparent 0deg,transparent 360deg);-webkit-mask:radial-gradient(transparent 24px,black 25px);mask:radial-gradient(transparent 24px,black 25px)}
+.ring-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+.ring-num{font-family:var(--mono);font-size:16px;font-weight:800;line-height:1}
+.ring-den{display:none}
+.ring-lbl{font-family:var(--mono);font-size:7px;font-weight:800;letter-spacing:1px;margin-top:2px}
+.col-news{flex:1;min-width:0;padding:16px 20px;border-right:1px solid var(--bdr);display:flex;flex-direction:column;gap:8px}
+.news-line{font-size:13px;line-height:1.55;display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+.news-hl{font-style:italic;font-weight:600;color:#c8d5e8}
+.news-body{font-size:12px;color:var(--muted);line-height:1.7}
+.src-a{font-family:var(--mono);font-size:10px;color:var(--muted);padding:2px 6px;border:1px solid var(--bdr);border-radius:4px;white-space:nowrap}
 .src-a:hover{color:var(--amber);border-color:rgba(251,191,36,0.4);text-decoration:none}
-
-/* catalysts — prominent */
-.card-cats{
-  background:rgba(255,255,255,0.025);
-  border:1px solid var(--bdr);border-radius:10px;
-  padding:14px 16px;margin-bottom:12px;
-}
-.cats-label{
-  font-family:var(--mono);font-size:9px;font-weight:700;
-  letter-spacing:2px;color:var(--muted);margin-bottom:10px;
-}
-.cats-grid{display:flex;flex-direction:column;gap:7px}
-.cat-pill{
-  display:flex;align-items:flex-start;gap:10px;
-  padding:9px 14px;border-radius:8px;border:1px solid;
-  font-size:12px;font-weight:600;line-height:1.45;
-}
-.cat-bullet{
-  width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:3px;
-}
-.no-cats{font-size:12px;color:var(--muted);font-style:italic}
-
-/* risk */
-.card-risk{
-  display:flex;align-items:flex-start;gap:8px;
-  background:rgba(255,71,87,0.06);
-  border:1px solid rgba(255,71,87,0.22);border-radius:8px;padding:10px 14px;
-}
-.risk-icon{font-size:13px;flex-shrink:0;margin-top:1px}
-.risk-body{font-size:12px;color:#fca5a5;line-height:1.65}
-
+.col-cats{width:200px;flex-shrink:0;padding:16px 18px;display:flex;flex-direction:column;gap:7px}
+.cats-lbl{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:1.5px;color:var(--muted)}
+.cats-chips{display:flex;flex-direction:column;gap:5px;flex:1}
+.cat-chip{display:block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:5px;border:1px solid}
+.no-cats{font-size:11px;color:var(--muted);font-style:italic}
+.risk-line{font-size:11px;color:#fca5a5;line-height:1.45;display:flex;align-items:flex-start;gap:5px;padding-top:8px;border-top:1px solid rgba(255,71,87,0.15);margin-top:auto}
+.risk-icon{font-size:11px;flex-shrink:0}
 /* ── History ── */
 .hgroup{margin-bottom:28px}
 .hg-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
