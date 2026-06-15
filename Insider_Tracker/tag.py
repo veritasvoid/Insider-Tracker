@@ -22,6 +22,7 @@ from scrape import run as scrape_run, run_history as scrape_history
 COLLAPSE_WINDOW_DAYS = 10   # same-insider buys within this window → one event
 HISTORY_DAYS         = 90   # look back this many days for cluster detection
 CLUSTER_THRESHOLD    = 2    # distinct insiders needed to tag CLUSTER
+REPEAT_THRESHOLD     = 3    # same insider buying this many times → REPEAT conviction
 
 
 # ── collapse logic ─────────────────────────────────────────────────────────────
@@ -99,8 +100,15 @@ def tag_ticker(ticker: str, run_date: str) -> list[dict]:
     for insider_buys in by_insider.values():
         all_events.extend(collapse_insider_buys(insider_buys))
 
-    distinct_buyers = len({e["insider_name"] for e in all_events})
-    cluster_tag     = "CLUSTER" if distinct_buyers >= CLUSTER_THRESHOLD else "SINGLE"
+    distinct_buyers  = len({e["insider_name"] for e in all_events})
+    max_filings      = max((e.get("n_filings", 1) for e in all_events), default=1)
+
+    if distinct_buyers >= CLUSTER_THRESHOLD:
+        cluster_tag = "CLUSTER"
+    elif max_filings >= REPEAT_THRESHOLD:
+        cluster_tag = "REPEAT"
+    else:
+        cluster_tag = "SINGLE"
 
     for e in all_events:
         e["cluster_tag"]         = cluster_tag

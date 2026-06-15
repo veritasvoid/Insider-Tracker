@@ -130,7 +130,9 @@ def _card(e, rank):
 
     cluster_badge = (
         f'<span class="cluster-tag">⚡ CLUSTER · {e.get("insider_count",2)} insiders</span>'
-        if tag == "CLUSTER" else ""
+        if tag == "CLUSTER" else
+        f'<span class="cluster-tag repeat-tag">🔄 REPEAT · {e.get("n_filings",3)} buys</span>'
+        if tag == "REPEAT" else ""
     )
 
     sub_parts = []
@@ -256,7 +258,9 @@ def _history(picks):
 
         cluster_badge = (
             f'<span class="hcl">⚡ CLUSTER · {buyers} insiders</span>'
-            if tag == "CLUSTER" else ""
+            if tag == "CLUSTER" else
+            f'<span class="hcl" style="color:#a78bfa">🔄 REPEAT</span>'
+            if tag == "REPEAT" else ""
         )
 
         out += f"""<div class="hrow" style="border-left-color:{col}">
@@ -501,6 +505,7 @@ body::before{
 .s-bear{color:#ff4757;background:rgba(255,71,87,0.1)}
 .s-neut{color:var(--muted);background:rgba(107,120,146,0.1)}
 .cluster-tag{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--amber);background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);border-radius:5px;padding:2px 8px}
+.repeat-tag{color:#a78bfa;background:rgba(167,139,250,0.1);border-color:rgba(167,139,250,0.3)}
 .sector-tag{display:inline-flex;align-items:center;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.5px;padding:2px 7px;border-radius:4px;border:1px solid}
 .col-score{width:220px;flex-shrink:0;padding:16px;border-right:1px solid var(--bdr);display:flex;flex-direction:column;align-items:center;gap:10px}
 .ci-cluster{width:100%;text-align:center}

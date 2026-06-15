@@ -214,6 +214,10 @@ def score_cluster(event: dict) -> tuple[float, list[str]]:
         count = event.get("insider_count", 2)
         pts = min(6 + (count - 2) * 2, 10)
         return pts, [f"CLUSTER buy ({count} insiders) — highest-alpha pattern (+{pts:.0f})"]
+    if tag == "REPEAT":
+        filings = event.get("n_filings", 3)
+        pts = min(3 + (filings - 3), 6)
+        return pts, [f"REPEAT conviction ({filings} purchases, same insider) — strong accumulation (+{pts:.0f})"]
     return 0, ["Single insider buy (0)"]
 
 
