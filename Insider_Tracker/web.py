@@ -225,8 +225,11 @@ def _history(picks):
 </div>"""
 
     HIST_HDR = ('<div class="hist-hdr">'
-                '<span>SIGNAL</span><span>SUMMARY</span>'
-                '<span>3D</span><span>8D</span><span>15D</span><span>30D</span><span>90D</span>'
+                '<div class="hist-hdr-l">SIGNAL</div>'
+                '<div class="hist-hdr-m">SUMMARY</div>'
+                '<div class="hist-hdr-r">'
+                '<span>3D</span><span>8D</span><span>15D</span>'
+                '<span>30D</span><span>90D</span></div>'
                 '</div>')
     out = HIST_HDR
     for p in sorted_picks:
@@ -319,7 +322,7 @@ def _history(picks):
       <span class="hm-v">{_fmtval(total_val)} total · {n_buys} buy{"s" if n_buys != 1 else ""}</span>
       <span class="hm-d">{date_label}</span>
     </div>
-    {ret_cells}
+    <div class="hrow-rets">{ret_cells}</div>
   </div>
   <div class="hrow-buys">{buy_rows}</div>
 </div>"""
@@ -582,19 +585,17 @@ body::before{
 .hg-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .hg-date{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--text)}
 .hg-cnt{font-family:var(--mono);font-size:11px;color:var(--muted)}
-/* ── History: sticky column header — same grid as each row ── */
+/* ── History: flex header — returns always flush-right ── */
 .hist-hdr{
+  display:flex;align-items:center;gap:14px;
+  padding:6px 19px 8px;
+  border-bottom:1px solid var(--bdr);margin-bottom:6px;
   font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.8px;
   color:var(--muted);opacity:.5;text-transform:uppercase;
-  display:grid;
-  grid-template-columns:290px 1fr 60px 60px 64px 64px 64px;
-  align-items:center;gap:0 10px;
-  padding:6px 19px 8px;
-  border-bottom:1px solid var(--bdr);
-  margin-bottom:6px;
 }
-.hist-hdr span:nth-child(n+3){text-align:center}
-/* Each card is flex-column; hrow-hdr inside uses same 7-col grid */
+.hist-hdr-l{flex:0 0 290px}
+.hist-hdr-m{flex:1;min-width:0}
+.hist-hdr-r{display:grid;grid-template-columns:repeat(5,64px);gap:0 8px;text-align:center}
 .hrow{
   display:flex;flex-direction:column;
   background:var(--card);
@@ -602,7 +603,7 @@ body::before{
   border:1px solid var(--bdr);border-left:3px solid;
   border-radius:10px;margin-bottom:6px;overflow:hidden;
 }
-.hrl-l{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hrl-l{flex:0 0 290px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .htk{font-family:var(--mono);font-size:20px;font-weight:800}
 .hsi{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:1px}
 .hsc{font-family:var(--mono);font-size:12px;color:var(--muted)}
@@ -610,7 +611,8 @@ body::before{
   font-family:var(--mono);font-size:10px;color:var(--amber);
   background:rgba(251,191,36,0.1);padding:2px 7px;border-radius:4px;
 }
-/* Per-period return cells — placed directly as grid children */
+/* Per-period return cells in a sub-grid, pushed to right */
+.hrow-rets{display:grid;grid-template-columns:repeat(5,64px);gap:0 8px}
 .h-ret{display:flex;flex-direction:column;align-items:center;gap:2px}
 .h-ret-val{font-family:var(--mono);font-size:12px;font-weight:700}
 .h-ret-lbl{font-size:9px;color:var(--muted);letter-spacing:.5px}
@@ -641,11 +643,9 @@ body::before{
 .td-m{font-family:var(--mono);font-size:12px;color:var(--muted)}
 .tcl{font-family:var(--mono);font-size:10px;color:var(--amber)}
 
-/* ── History row v3: 7-column grid matches hist-hdr exactly ── */
+/* ── History row header: flex — left fixed, summary grows, returns right-flush ── */
 .hrow-hdr{
-  display:grid;
-  grid-template-columns:290px 1fr 60px 60px 64px 64px 64px;
-  align-items:center;gap:0 10px;
+  display:flex;align-items:center;gap:14px;
   padding:12px 16px;
   border-bottom:1px solid var(--bdr);
 }
