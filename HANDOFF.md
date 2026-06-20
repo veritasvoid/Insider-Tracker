@@ -1,321 +1,341 @@
-# Insider Tracker — Project Handoff
+# Insider Tracker — Complete Project Handoff
 
-> Paste this file at the start of any new chat session. It contains everything needed for a seamless continuation.
+**Last updated:** 2026-06-15  
+**Dashboard live at:** https://veritasvoid.github.io/Insider-Tracker/  
+**GitHub repo:** https://github.com/veritasvoid/Insider-Tracker  
+**GitHub user:** veritasvoid  
+**Local folder:** `C:\Users\jjami\OneDrive\Desktop\Insider_Tracker\`
 
 ---
 
 ## What This Project Is
 
-A 7-stage automated pipeline that:
-1. Scrapes CEO/CFO insider buys ≥ $100k from OpenInsider daily
-2. Collapses multi-day buys per insider, tags CLUSTER vs SINGLE
-3. Enriches each ticker with price context (EMA50/200, velocity, short float, sector)
-4. Fetches news, catalysts, sentiment via Gemini 2.5 Flash
-5. Scores each pick 0–100 using a quant layer (deterministic) + AI layer (Claude Haiku)
-6. Writes JSON + Markdown reports and a Bloomberg-grade HTML dashboard
-7. Tracks forward performance (3d / 8d / 15d / 30d / 90d returns)
-
-The HTML dashboard is hosted on **GitHub Pages** (static, no server). It regenerates automatically via **GitHub Actions** every weekday at 8am ET.
+A Bloomberg-style dashboard that automatically:
+1. Scrapes CEO/CFO insider buy filings from OpenInsider every weekday at 10:30 AM ET
+2. Collapses and tags buys as CLUSTER (2+ different insiders), REPEAT (same insider 3+ times), or SINGLE
+3. Enriches with price/technical data (Alpaca + Polygon APIs)
+4. Runs AI analysis via Claude Haiku to score catalysts, sentiment, fundamentals
+5. Scores each pick 0-100 across 7 dimensions
+6. Generates a Bloomberg-grade HTML dashboard published to GitHub Pages
+7. Tracks forward performance at 3d / 8d / 15d / 30d / 90d
 
 ---
 
-## Folder Structure
+## File Structure
 
 ```
-Insider_Tracker/               ← repo root
-├── .github/workflows/
-│   └── daily.yml              ← GitHub Actions: runs pipeline, commits docs/index.html
-├── .gitignore                 ← excludes config.yaml, __pycache__, data/reports/
-├── docs/
-│   ├── index.html             ← live dashboard (committed by Actions, served by Pages)
-│   └── preview.html           ← local preview output (not committed)
-└── Insider_Tracker/           ← Python package
-    ├── config.yaml            ← API keys + filter thresholds (NEVER commit — gitignored)
-    ├── requirements.txt
-    ├── db.py                  ← SQLite persistence layer
-    ├── scrape.py              ← Stage 1: OpenInsider scraper
-    ├── tag.py                 ← Stage 2: collapse + CLUSTER/SINGLE tagging
-    ├── enrich.py              ← Stage 3: Alpaca → Polygon → Finviz price/sector/short float
-    ├── research.py            ← Stage 4: Gemini 2.5 Flash news + catalysts
-    ├── score.py               ← Stage 5: quant scoring + Claude Haiku qualitative layer
-    ├── output.py              ← Stage 6: write JSON/MD reports + trigger HTML generation
-    ├── track.py               ← Stage 7: forward performance tracker
-    ├── web.py                 ← Dashboard HTML generator (Bloomberg-grade)
-    ├── preview.py             ← Local preview with hardcoded sample data
-    └── data/
-        ├── insider_tracker.db ← SQLite DB (3 tables: insider_buys, buy_events, picks)
-        └── reports/           ← Daily JSON + MD reports (gitignored)
+C:\Users\jjami\OneDrive\Desktop\Insider_Tracker\
+│
+├── HANDOFF.md                          <- this file
+├── SETUP_GITHUB.md                     <- initial GitHub setup guide
+├── requirements.txt                    <- top-level pip requirements
+├── .gitignore
+│
+├── .github\workflows\
+│   ├── daily_run.yml                   <- ACTIVE workflow (use this one)
+│   └── daily.yml                       <- older duplicate, ignore
+│
+├── docs\
+│   ├── index.html                      <- LIVE dashboard (GitHub Pages serves this)
+│   ├── preview.html                    <- static design preview
+│   └── preview_test.html               <- ignore
+│
+└── Insider_Tracker\                    <- Python package root (all scripts run from here)
+    ├── main.py                         <- ENTRY POINT — runs all 7 stages
+    ├── scrape.py                       <- Stage 1: OpenInsider scraper
+    ├── tag.py                          <- Stage 2: collapse buys + tag CLUSTER/REPEAT/SINGLE
+    ├── enrich.py                       <- Stage 3: price, EMA, short float via Alpaca/Polygon
+    ├── research.py                     <- Stage 4: Claude AI news analysis + catalysts
+    ├── score.py                        <- Stage 5: 0-100 composite scoring
+    ├── output.py                       <- Stage 6: JSON/MD reports + HTML + DB save
+    ├── track.py                        <- Stage 7: forward performance price fills
+    ├── web.py                          <- HTML generator (ALL dashboard CSS + JS lives here)
+    ├── db.py                           <- SQLite layer (all DB reads/writes)
+    ├── config.template.yaml            <- template (copy -> config.yaml, fill secrets)
+    ├── config.yaml                     <- NEVER committed (has real API keys)
+    └── data\
+        ├── insider_tracker.db          <- SQLite DB (committed to repo after each run)
+        └── reports\                    <- JSON + MD reports per run (gitignored)
 ```
 
 ---
 
-## Pipeline Flow
+## Pipeline Architecture (7 Stages)
 
 ```
-scrape.py → tag.py → enrich.py → research.py → score.py → output.py → track.py
-   S1          S2        S3           S4           S5          S6          S7
+main.py calls output.run() which chains:
+
+Stage 1  scrape.py    OpenInsider HTML scrape (CEO/CFO buys >=100K, lookback 3 days)
+Stage 2  tag.py       DB insert -> collapse same-insider buys (5-day window) -> CLUSTER/REPEAT/SINGLE
+Stage 3  enrich.py    Alpaca bars (EMA50/200, velocity) + Polygon short float + current price
+Stage 4  research.py  Claude Haiku: headline, summary, catalysts, sentiment
+Stage 5  score.py     Composite 0-100 score -> stars 1-5 -> label (STRONG BUY / BUY / WATCH / WEAK / SKIP)
+Stage 6  output.py    Write JSON report, MD briefing, call db.save_picks(), call web.write_html()
+Stage 7  track.py     update_picks() fills price_3d/8d/15d/30d/90d via Polygon as days pass
 ```
 
-Each stage imports the previous: `output.py` calls `score.run()`, which calls `research.run()`, etc. Running `python output.py` triggers the entire chain.
+### Stage 6 internal flow (output.py):
+1. `db.save_picks(scored_events)` — upserts ONE row per ticker in picks table, sets `last_updated = today`, stores raw purchases JSON blob
+2. `track.update_picks(cfg)` — fills forward price columns for mature picks
+3. `track.load_all_picks()` — returns all picks rows for history tab
+4. `web.write_html(events, all_picks)` — generates docs/index.html
 
 ---
 
-## Stage Details
+## Database Schema (insider_tracker.db)
 
-### Stage 1 — scrape.py
-- URL: `http://openinsider.com/screener?xp=1&vl=100&fd=2&cnt=500&Action=screener`
-- Filters: CEO/CFO title keywords, `P - Purchase` trade type, value ≥ $100k, within `lookback_days`
-- Returns list of dicts with: `filing_date`, `trade_date`, `ticker`, `company`, `insider_name`, `title`, `price`, `qty`, `value`, `delta_own`, `trade_type`
-- **Important**: `trade_date` = when the insider actually traded (shown in dashboard as "Trade YYYY-MM-DD"). `filing_date` = when Form 4 was filed with SEC (typically 1–2 days later). OpenInsider's main column shows filing date — this is why dates appear to differ by 1 day.
-
-### Stage 2 — tag.py
-- Inserts fresh buys into `insider_buys` SQLite table (UNIQUE on `trade_date + ticker + insider_name + value`)
-- Pulls 30-day history per ticker from DB
-- Collapses same-insider buys within 10-day window into one event
-- Tags CLUSTER (2+ distinct insiders in 30d) or SINGLE
-- Returns `event_start_date` = first trade date in the collapsed window
-
-### Stage 3 — enrich.py
-- **Alpaca IEX** (batch): fetches 300 days of daily closes for all tickers
-- **Polygon fallback**: for any ticker Alpaca misses (small-caps, ADRs)
-- **Finviz scrape**: `short_float_pct` AND `sector` for each ticker
-- Computes: `current_price`, `ema_50`, `ema_200`, `price_vs_ema50_pct`, `price_vs_ema200_pct`, `price_velocity_5d`
-- EMA uses standard exponential: seeded with SMA for first N bars, then `k = 2/(period+1)`
-
-### Stage 4 — research.py
-- Calls Gemini 2.5 Flash with ticker + insider buy context
-- Returns: `news_headline`, `news_summary`, `catalysts` (list of strings), `news_sentiment` (bullish/neutral/bearish)
-
-### Stage 5 — score.py
-Composite 0–100 score split two layers:
-
-**Quant layer (0–65 pts, deterministic):**
-| Dimension | Max | Logic |
-|-----------|-----|-------|
-| D1 Insider Signal | 25 | Dollar size (log-scaled) + delta ownership % + dip-buy bonus + CEO/CFO seniority |
-| D2 Price/Technical | 20 | EMA50 position + EMA200 position + 5d velocity |
-| D3 Short Interest | 10 | 10–25% short float = 8pts (squeeze potential); >40% = 3pts (binary risk) |
-| D4 Cluster Bonus | 10 | CLUSTER = 6+pts; SINGLE = 0 |
-
-**AI layer (0–35 pts, Claude Haiku):**
-| Dimension | Max | Logic |
-|-----------|-----|-------|
-| D5 Fundamentals | 12 | Revenue growth, profitability direction, balance sheet |
-| D6 Catalyst Strength | 13 | FDA PDUFA/trial readouts = 11–13; vague = 2–4 |
-| D7 News Alignment | 10 | News corroborates insider buy thesis |
-
-**Stars:**
-- 80–100 → ★★★★★ STRONG BUY
-- 60–79  → ★★★★  BUY
-- 40–59  → ★★★   WATCH
-- 20–39  → ★★    WEAK
-- 0–19   → ★     SKIP
-
-Claude Haiku is called once per unique ticker (not per insider event) and the AI scores are cached for CLUSTER picks with multiple events.
-
-### Stage 6 — output.py
-- Writes timestamped JSON + Markdown to `data/reports/`
-- Calls `db.save_picks()` to persist picks to SQLite
-- Calls `track.update_picks()` to fill forward prices for aged picks
-- Calls `web.write_html()` to generate `docs/index.html`
-
-### Stage 7 — track.py
-- `get_picks_for_tracking()`: returns picks where forward price columns are NULL and enough time has passed (≥3/8/15/30/90 calendar days since `run_date`)
-- Fetches prices from Polygon with a ±5-day window (handles weekends/holidays)
-- Returns are vs `price_at_pick` (market price when pipeline ran), NOT vs insider's buy price
-- `load_all_picks()`: deduplicates via `MIN(id) GROUP BY (ticker, event_date)` — prevents the same insider filing appearing twice if pipeline ran on consecutive days
-
----
-
-## Database Schema
-
-**`insider_buys`** — raw SEC filings (rolling 90-day history)
-- UNIQUE: `(trade_date, ticker, insider_name, value)`
+**`insider_buys`** — raw individual filings (pruned to 90 days rolling)
+- `trade_date, ticker, company, insider_name, title, price, qty, owned, delta_own, value`
+- UNIQUE on `(trade_date, ticker, insider_name, value)`
 
 **`buy_events`** — collapsed events from Stage 2
-- UNIQUE: `(run_date, ticker, insider_name, event_start_date)`
+- `run_date, ticker, insider_name, event_start_date, event_end_date, total_value, cluster_tag, distinct_buyers_30d`
 
-**`picks`** — scored picks for Stage 7 tracking
-- UNIQUE INDEX: `(ticker, COALESCE(event_date, ''))` — prevents duplicate tracking of the same filing across consecutive run_dates
-- Key columns: `run_date`, `ticker`, `buy_price` (insider's price), `price_at_pick` (market price at run time), `price_3d/8d/15d/30d/90d` (forward prices filled by track.py)
+**`picks`** — scored picks, ONE ROW PER TICKER (upserted each detection)
+- `ticker, company, cluster_tag, distinct_buyers, total_value`
+- `score, score_stars, score_label, score_breakdown (JSON), score_key_risk`
+- `first_seen` — date ticker was first detected
+- `last_updated` — date of most recent pipeline run that detected this ticker
+- `purchases` — JSON array of raw buy rows from insider_buys (for History tab drill-down)
+- `price_at_pick` — market price at first detection
+- `price_3d / price_8d / price_15d / price_30d / price_90d` — filled by track.py
+- `news_headline, news_sentiment, catalysts (JSON)`
 
 ---
 
-## Dashboard — web.py
+## Scoring System (score.py)
 
-The dashboard generates a single-file HTML with three tabs: **TODAY / HISTORY / PERFORMANCE**.
+| Dimension | Max | Source |
+|-----------|-----|--------|
+| D1 Insider Signal (value, delta_own, title) | 25 | Quant |
+| D2 Price/Technical (vs EMA50/200, velocity) | 20 | Quant |
+| D3 Short Interest (short float %) | 10 | Quant |
+| D4 Cluster Bonus (CLUSTER/REPEAT tag) | 10 | Quant |
+| D5 Fundamental Quality | 12 | Claude AI |
+| D6 Catalyst Strength | 13 | Claude AI |
+| D7 News/Sentiment Fit | 10 | Claude AI |
+| TOTAL | 100 | |
 
-**Design requirements (non-negotiable):**
-- Real glassmorphism: `backdrop-filter: blur(32px) saturate(170%)`, `rgba(7,14,34,0.74)` card backgrounds
-- NO 3D card tilt/perspective animations — explicitly rejected as "annoyingly bad"
-- Arizona timezone (MST = UTC-7, permanent, no DST): `timezone(timedelta(hours=-7))`
-- Score ring: CSS `conic-gradient` + `radial-gradient` mask for donut shape — NO SVG (SVG inside backdrop-filter creates square artifact bounding box)
-- Score ring animates with `requestAnimationFrame` cubic ease-out (1100ms) on page load
-- Catalysts shown as large colored pill blocks (not small dots or bullet points) — color-coded by type
-- Sector badge shown prominently on each card
-- NO average score in hero stats
-- Cards sorted by score descending
+Star thresholds: 80-100 = STRONG BUY, 60-79 = BUY, 40-59 = WATCH, 20-39 = WEAK, 0-19 = SKIP
 
-**Key color constants in web.py:**
+---
+
+## Tagging Logic (tag.py)
+
+- `COLLAPSE_WINDOW_DAYS = 5` — same insider buys within 5 days merge into one event
+- `HISTORY_DAYS = 90` — look back 90 days for cluster detection
+- `CLUSTER_THRESHOLD = 2` — 2+ distinct insiders in 90d = CLUSTER
+- `REPEAT_THRESHOLD = 3` — same insider 3+ filings = REPEAT
+- Priority: CLUSTER > REPEAT > SINGLE
+
+---
+
+## Dashboard (web.py) — Key Layout Details
+
+`web.py` (~847 lines) generates ALL HTML inline. No separate CSS/JS files.
+
+### Today's Picks Tab
+- Cards rendered by `_card(e, rank)`
+- 3-band layout: left (ticker/meta/price), center (score ring + cluster badge + technicals), right (news/catalysts)
+- Score ring = CSS conic-gradient via `data-score` attribute, animated by JS at bottom of file
+
+### History Tab
+- `_history(picks)` — sorts by `last_updated` DESC, then `score` DESC
+- TODAY chip shows when `last_updated == today`
+- DUAL BADGE logic: CLUSTER shows both "CLUSTER x insiders" AND "x buys" when n_buys > unique_insiders
+  - Computes unique_ins from the purchases JSON at render time (not from DB field)
+- Layout (FIXED 2026-06-15): flex rows
+  - `.hrl-l` fixed 290px (ticker + badges)
+  - `.hrow-meta` flex:1 (total value + date)
+  - `.hrow-rets` = 5-column sub-grid `repeat(5, 64px)` pushed right
+  - This eliminates the large blank space that `1fr` caused on wide screens
+- Buy drill-down rows: `.hrow-buys` div contains `.buy-hdr` + `.buy-row` (7-col grid)
+
+### CSS grid constants for History (as of current version):
+```css
+.hist-hdr { display:flex; align-items:center; gap:14px; }
+.hist-hdr-l { flex:0 0 290px }
+.hist-hdr-m { flex:1; min-width:0 }
+.hist-hdr-r { display:grid; grid-template-columns:repeat(5,64px); gap:0 8px; text-align:center }
+
+.hrow-hdr { display:flex; align-items:center; gap:14px; }
+.hrl-l    { flex:0 0 290px; display:flex; align-items:center; gap:8px; flex-wrap:wrap }
+.hrow-meta { flex:1; ... }
+.hrow-rets { display:grid; grid-template-columns:repeat(5,64px); gap:0 8px }
+```
+
+### Performance Tab
+- `_perf(picks)` — summary table of all tracked picks with realized return %
+
+---
+
+## GitHub Actions Workflow
+
+File: `.github/workflows/daily_run.yml`
+
+- **Schedule:** `cron: '30 14 * * 1-5'` = 10:30 AM ET Mon-Fri / 7:30 AM Arizona
+- **Manual trigger:** GitHub.com -> Actions -> "Daily Insider Tracker" -> "Run workflow"
+- **Python version:** 3.11
+- **Steps:** checkout -> pip install -r requirements.txt -> write config.yaml from secrets -> `python main.py` -> `git add docs/index.html Insider_Tracker/data/insider_tracker.db` -> commit -> push
+- **Commits back:** only `docs/index.html` and `insider_tracker.db` (config.yaml never committed)
+
+### GitHub Secrets Required
+Settings at: https://github.com/veritasvoid/Insider-Tracker/settings/secrets/actions
+
+| Secret | Purpose |
+|--------|---------|
+| ALPACA_API_KEY | Alpaca Markets API key (price bars / EMA) |
+| ALPACA_API_SECRET | Alpaca Markets secret |
+| POLYGON_API_KEY | Polygon.io API key (short float + forward price tracking) |
+| ANTHROPIC_API_KEY | Claude API key (AI scoring D5/D6/D7) |
+| GITHUB_TOKEN | Auto-provided by GitHub Actions |
+
+---
+
+## Local Development
+
+### Run full pipeline:
+```powershell
+cd C:\Users\jjami\OneDrive\Desktop\Insider_Tracker\Insider_Tracker
+python main.py
+```
+
+### Regenerate HTML from existing DB (no API calls):
 ```python
-SCORE_COLORS = {5:"#00ffd4", 4:"#2979ff", 3:"#fbbf24", 2:"#ff6b35", 1:"#ff4757"}
-STAR_LABELS  = {5:"STRONG BUY", 4:"BUY", 3:"WATCH", 2:"WEAK", 1:"SKIP"}
+# Run from Insider_Tracker/ directory
+from track import load_all_picks
+from web import write_html
+all_picks = load_all_picks()
+write_html([], all_picks)   # empty events = no Today's Picks card, but History works
 ```
 
-**Catalyst color types:**
-- `teal` (#00ffd4): FDA, PDUFA, PHASE, NDA, TRIAL
-- `blue` (#5b9bff): EARNINGS, REVENUE, GUIDANCE, EPS
-- `amber` (#fbbf24): EGM, AGM, MERGER, ACQUI
-- `red` (#ff4757): NYSE, NASDAQ, COMPLIANCE, DELISTING
-- `def` (#8892a4): everything else
-
-**Date label**: Cards show "Trade YYYY-MM-DD" (the SEC trade date, not the filing date).
-
-**Hero stats (TODAY tab, 4 stats):**
-1. Today's Picks / count / Unique tickers
-2. Cluster Signals / count / Multi-insider buys
-3. Top Pick / TICKER·score / label
-4. Tracked Positions / count / In performance log
+### Config file:
+`Insider_Tracker/config.yaml` — NOT committed to git. Copy from `config.template.yaml` and fill in real API keys.
 
 ---
 
-## Critical Technical Quirk — web.py and .pyc Cache
+## Git Workflow
 
-The Write/Edit tools write files with trailing null bytes (`\x00`). Python's import system rejects source files with null bytes (`ValueError: source code string cannot contain null bytes`), and also caches `.pyc` files which may be newer than the patched source.
-
-**After every edit to web.py, run:**
-```bash
-cd Insider_Tracker/Insider_Tracker
-python3 -c "d=open('web.py','rb').read().rstrip(b'\x00'); open('web.py','wb').write(d)"
-touch web.py
+### Normal push:
+```powershell
+cd C:\Users\jjami\OneDrive\Desktop\Insider_Tracker
+git add Insider_Tracker/web.py
+git commit -m "fix: description"
+git push
 ```
 
-`preview.py` bypasses the `.pyc` cache entirely using `importlib.util.spec_from_file_location` to force-load from source:
-```python
-import importlib.util as _ilu, sys as _sys
-_spec = _ilu.spec_from_file_location("web", __file__.replace("preview.py", "web.py"))
-_web  = _ilu.module_from_spec(_spec)
-_spec.loader.exec_module(_web)
+### If push rejected (workflow committed ahead of you):
+```powershell
+git pull --rebase
+git push
 ```
+
+If rebase conflict on docs/index.html:
+```powershell
+git pull --rebase
+git checkout --theirs docs/index.html
+git add docs/index.html
+git rebase --continue
+# if vim opens for commit message: type :wq and press Enter
+git push
+```
+
+### CRITICAL — CRLF warning:
+The repo was initialized on Windows. The GitHub Actions runner uses Linux LF endings.
+If Claude's sandbox edits Python files via bash, it may mix CRLF/LF, which causes git Edit tool
+mismatches and can truncate files. ALWAYS use Python `open(path, "wb").write(content.encode("utf-8"))`
+for any file writes from the Linux sandbox. NEVER use bash `cat >>` or `echo >>` on existing Python files.
 
 ---
 
-## Config File Structure
+## Known Issues & Fixes Applied
 
-`Insider_Tracker/config.yaml` (gitignored — never commit):
-```yaml
-scrape:
-  url: "http://openinsider.com/screener?xp=1&vl=100&fd=2&cnt=500&Action=screener"
-  min_value: 100000
-  lookback_days: 3
-  max_results: 100
-  request_timeout: 15
-  ceo_cfo_titles: [CEO, CFO, Chief Executive, Chief Financial]
+### Blank space in History tab (FIXED 2026-06-15)
+- Was: 7-column CSS grid with `1fr` summary column stretched to full width on wide screens
+- Fix: changed to flex layout with `.hrow-rets` as a fixed 5x64px sub-grid
 
-alpaca:
-  api_key: "YOUR_KEY"
-  api_secret: "YOUR_SECRET"
-  data_url: "https://data.alpaca.markets/v2"
-  bars_limit: 200
-  request_timeout: 20
+### SMMT dual badge (FIXED)
+- Was: n_buys > distinct_buyers check used the stored DB integer which could equal n_buys
+- Fix: compute `unique_ins = len({pur.get("insider_name","") for pur in purchases})` from raw purchases JSON at render time
 
-polygon:
-  api_key: "YOUR_KEY"
-  base_url: "https://api.polygon.io/v2"
-  request_timeout: 20
+### History sort (partially fixed, root cause in DB)
+- Symptom: ticker shows old date in History even if it appeared in Today's Picks today
+- Root cause: `last_updated` field in picks table only updates when `save_picks()` is called, which only runs if the pipeline finds that ticker as a fresh buy
+- Investigation: check `db.save_picks()` print output in GitHub Actions logs; confirm `last_updated` is set to today for each ticker in today's run
 
-enrich:
-  history_days: 200
-  velocity_days: 5
+### web.py truncation (FIXED — historical)
+- Caused by Edit tool operating on CRLF file with LF search string
+- The `JS = """` triple-quoted string (around line 690-700) is the most vulnerable point
+- If it gets truncated, py_compile will give SyntaxError: EOF in multi-line string
+- Fix: use Python open(wb) to write entire file at once rather than line-level edits
 
-gemini:
-  api_key: "YOUR_KEY"
-  model: "gemini-2.5-flash"
-  news_lookback_days: 14
-  request_timeout: 30
+### Git index corruption (FIXED — historical)
+- Caused by Windows NTFS + Linux FUSE mount + multiple concurrent git processes
+- If it happens: `GIT_INDEX_FILE=/tmp/new git read-tree HEAD` then
+  `python3 -c "open('.git/index','wb').write(open('/tmp/new','rb').read())"`
 
-anthropic:
-  api_key: "YOUR_KEY"
-  model: "claude-haiku-4-5-20251001"
-  request_timeout: 60
+---
+
+## Data Flow Diagram
+
 ```
-
----
-
-## GitHub Actions — daily.yml
-
-- **Schedule**: `cron: '0 13 * * 1-5'` → 8am ET weekdays (UTC-5 = 13:00 UTC)
-- **Trigger**: also supports `workflow_dispatch` (manual trigger from GitHub Actions tab)
-- **What it does**: checks out repo → writes `config.yaml` from Secrets → runs `python output.py` → commits `docs/index.html` back to repo
-- **Working directory**: `Insider_Tracker/` (the Python package folder)
-
-**5 GitHub Secrets required:**
-| Secret Name | Purpose |
-|-------------|---------|
-| `ALPACA_API_KEY` | Alpaca data API |
-| `ALPACA_API_SECRET` | Alpaca data API |
-| `POLYGON_API_KEY` | Polygon.io fallback |
-| `GEMINI_API_KEY` | Gemini 2.5 Flash (news research) |
-| `ANTHROPIC_API_KEY` | Claude Haiku (qualitative scoring) |
-
-GitHub Pages: set to serve from **`docs/` folder on `main` branch**.
-
----
-
-## Running Locally
-
-```bash
-cd Insider_Tracker/Insider_Tracker
-pip install -r requirements.txt
-
-# Full pipeline (writes docs/index.html)
-python output.py
-
-# Preview dashboard with sample data (no API calls)
-python preview.py
-# Then open docs/preview.html in browser
-
-# Individual stages
-python scrape.py
-python tag.py
-python enrich.py
-python research.py
-python score.py
-python track.py
+OpenInsider (HTML scrape)
+    |
+scrape.py -> list of raw buy dicts
+    |
+tag.py -> insert_buys() -> DB [insider_buys]
+       -> tag_ticker() -> collapse per insider (5d window)
+       -> CLUSTER / REPEAT / SINGLE tag
+       -> buy_events[] with cluster_tag, insider_count
+    |
+enrich.py -> add current_price, EMA50/200, velocity, short_float_pct
+    |
+research.py -> Claude Haiku -> add news_headline, catalysts, news_sentiment
+    |
+score.py -> D1-D7 scores -> score_total (0-100) -> score_stars (1-5)
+    |
+output.py -> write_json() -> data/reports/YYYY-MM-DD_HH-MM.json
+          -> write_markdown() -> data/reports/YYYY-MM-DD_HH-MM.md
+          -> db.save_picks() -> DB [picks] upsert (purchases JSON, last_updated=today)
+          -> track.update_picks() -> fills price_3d/8d/15d/30d/90d
+          -> track.load_all_picks() -> all_picks[]
+          -> web.write_html(events, all_picks) -> docs/index.html
+    |
+GitHub Actions -> git commit docs/index.html + data/insider_tracker.db -> push
+    |
+GitHub Pages -> https://veritasvoid.github.io/Insider-Tracker/
 ```
 
 ---
 
-## What's Done / Pending
+## Key Function Reference
 
-**All 7 stages complete and tested.** Dashboard design finalized.
-
-**Pending (Task 15 & 16):**
-1. Push all files to GitHub repository
-2. Enable GitHub Pages → Settings → Pages → Source: `docs/` folder on `main`
-3. Add 5 Secrets: Settings → Secrets and variables → Actions
-4. Trigger manual `workflow_dispatch` to verify end-to-end pipeline runs and `docs/index.html` is committed
-
----
-
-## Known Issues / Design Decisions
-
-| Issue | Decision |
-|-------|----------|
-| OpenInsider shows filing date, dashboard shows trade date | Correct behavior — dashboard labels it "Trade YYYY-MM-DD" |
-| Same insider filing could appear in picks across two run_dates | Fixed: UNIQUE INDEX on `picks(ticker, event_date)` + `load_all_picks()` deduplication |
-| SVG inside backdrop-filter creates square artifact | Fixed: replaced SVG score ring with CSS conic-gradient + mask |
-| Write/Edit tool leaves null bytes in web.py | Fixed: strip + touch after every edit (see quirk section above) |
-| Stale .pyc cache | Fixed: preview.py uses importlib force-load; strip + touch fixes production |
-| 3D card tilt tried and rejected | Do not re-add — user explicitly rejected it |
-| Avg Score in hero stats tried and rejected | Do not re-add |
+| Function | File | What it does |
+|----------|------|-------------|
+| `main()` | main.py | Entry point, calls output.run() |
+| `run(config_path)` | output.py | Runs all 7 stages, returns (json_path, md_path) |
+| `tag_ticker(ticker, run_date)` | tag.py | Returns buy events for one ticker with cluster tag |
+| `save_picks(scored_events)` | db.py | Upserts picks — ONE row per ticker, sets last_updated=today |
+| `load_all_picks()` | track.py | Returns all picks rows for History tab |
+| `update_picks(cfg)` | track.py | Fills price_3d/8d/15d/30d/90d for mature picks |
+| `write_html(events, all_picks)` | web.py | Generates docs/index.html |
+| `_history(picks)` | web.py | Renders History tab HTML (sorted by last_updated DESC) |
+| `_card(e, rank)` | web.py | Renders one Today's Picks card |
+| `_ring(score, stars)` | web.py | CSS conic-gradient score ring HTML |
+| `_ret(base, price)` | web.py | Calculates % return, returns (float, str) |
 
 ---
 
-## File Locations (Windows paths)
+## Pending Work / Suggested Next Steps
 
-- Repo root: `C:\Users\jjami\OneDrive\Desktop\Insider_Tracker\`
-- Python package: `C:\Users\jjami\OneDrive\Desktop\Insider_Tracker\Insider_Tracker\`
-- Dashboard output: `C:\Users\jjami\OneDrive\Desktop\Insider_Tracker\docs\index.html`
-- Preview: `C:\Users\jjami\OneDrive\Desktop\Insider_Tracker\docs\preview.html`
-- DB: `C:\Users\jjami\OneDrive\Desktop\Insider_Tracker\Insider_Tracker\data\insider_tracker.db`
+1. **Push the pending merge commit** — run `git push` from the local folder. Commit `e3f5f0b` (history flex layout fix) has been built locally but not pushed yet.
+
+2. **Verify last_updated freshness** — check GitHub Actions logs for `[db] save_picks:` line to confirm each run's tickers are getting `last_updated` set to today. If they aren't, the History tab will show stale dates.
+
+3. **Short float reliability** — currently via Polygon. `debug_finviz.py` exists as a Finviz-based alternative if Polygon short float data is patchy.
+
+4. **Lookback on Mondays** — `scrape.lookback_days: 3` means Monday runs may miss some Friday/Saturday filings. Consider bumping to 5 on Monday runs.
+
+5. **Dead CSS cleanup** — `.hrl-r{display:none}` in the @media block references a removed element; safe to delete.
+
+6. **Alert emails** — consider adding a GitHub Actions step to email a briefing when top score >= 60.
