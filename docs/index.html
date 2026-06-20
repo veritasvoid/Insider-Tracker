@@ -294,6 +294,9 @@ footer{
   .card-metrics{grid-template-columns:repeat(2,1fr)}
   .hrl-r{display:none}
 }
+
+/* ── Filtered tab (additive — new rule only, nothing above touched) ── */
+.fband{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--amber);background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);border-radius:4px;padding:2px 7px;margin-right:4px}
 </style>
 </head>
 <body>
@@ -308,7 +311,7 @@ footer{
     </div>
   </div>
   <div class="clock">
-    <div class="clock-t" id="az-clock">Sat, Jun 20  13:40:15</div>
+    <div class="clock-t" id="az-clock">Sat, Jun 20  14:24:14</div>
     <div class="clock-z">ARIZONA TIME · MST · UTC−7</div>
   </div>
 </header>
@@ -317,6 +320,7 @@ footer{
   <button class="tab-btn active" data-tab="t-today">Today's Picks</button>
   <button class="tab-btn" data-tab="t-history">History</button>
   <button class="tab-btn" data-tab="t-perf">Performance</button>
+  <button class="tab-btn" data-tab="t-filtered">Filtered</button>
 </nav>
 
 <main>
@@ -325,7 +329,7 @@ footer{
   <div class="hero">
 <div class="hc"><div class="hc-l">Today's Picks</div><div class="hc-v">4</div><div class="hc-s">Unique tickers</div></div>
 <div class="hc"><div class="hc-l">Cluster Signals</div><div class="hc-v">0</div><div class="hc-s">Multi-insider buys</div></div>
-<div class="hc"><div class="hc-l">Top Pick</div><div class="hc-v" style="font-size:22px">GOTU&nbsp;·&nbsp;46</div><div class="hc-s">WATCH</div></div>
+<div class="hc"><div class="hc-l">Top Pick</div><div class="hc-v" style="font-size:22px">GOTU&nbsp;·&nbsp;52</div><div class="hc-s">WATCH</div></div>
 <div class="hc"><div class="hc-l">Tracked Positions</div><div class="hc-v">23</div><div class="hc-s">In performance log</div></div></div>
   <div class="sec">June 20, 2026 · Scored Picks</div>
   <div class="picks"><article class="card" style="--ac:#fbbf24">
@@ -348,11 +352,11 @@ footer{
     </div>
 
     <div class="col-score">
-      <div class="ring-outer" data-score="46.0" data-color="#fbbf24">
+      <div class="ring-outer" data-score="52.0" data-color="#fbbf24">
   <div class="ring-track"></div>
   <div class="ring-fill"></div>
   <div class="ring-text">
-    <span class="ring-num" style="color:#fbbf24">46</span>
+    <span class="ring-num" style="color:#fbbf24">52</span>
     <span class="ring-den">/100</span>
     <span class="ring-lbl" style="color:#fbbf24">WATCH</span>
   </div>
@@ -367,65 +371,14 @@ footer{
     </div>
 
     <div class="col-news">
-      <div class="news-line"><span class="news-hl">"Gaotu Techedu CEO Buys $615K in Shares, Signaling Confidence"</span> <a href="https://www.benzinga.com/sec/insider-trades/24/06/39328243/gaotu-techedu-inc-ceo-larry-xiangdong-chen-buys-272100-shares" target="_blank" class="src-a">↗1</a><a href="https://www.prnewswire.com/news-releases/gaotu-techedu-inc-announces-results-of-2024-annual-general-meeting-302168340.html" target="_blank" class="src-a">↗2</a></div>
-      <p class="news-body">Gaotu Techedu Inc.'s CEO, Larry Xiangdong Chen, recently purchased $614,949 worth of company shares at $2.26 per share on June 11, 2024. This significant insider buy, occurring shortly after the company announced the results of its 2024 Annual General Meeting, suggests strong executive confidence in the company's future prospects and valuation. The purchase could indicate a belief that the stock is currently undervalued.</p>
+      <div class="news-line"><span class="news-hl">"Gaotu Techedu CEO Buys Over $600K In Company Stock, Signaling Strong Confidence"</span> <a href="https://www.benzinga.com/markets/insider-trades/24/06/39276432/gaotu-techedu-ceo-buys-over-600k-in-company-stock" target="_blank" class="src-a">↗1</a><a href="https://www.marketbeat.com/stocks/NYSE/GOTU/insider-trades/" target="_blank" class="src-a">↗2</a></div>
+      <p class="news-body">Gaotu Techedu Inc. CEO Larry Xiangdong Chen recently demonstrated strong confidence in the company by purchasing $614,949 worth of shares at $2.26 each on June 11. This significant insider buy follows the company's positive Q1 2024 earnings report, where Gaotu exceeded revenue expectations and returned to profitability, suggesting a potential positive trajectory for the online education provider.</p>
     </div>
 
     <div class="col-cats">
       <div class="cats-lbl">CATALYSTS</div>
-      <div class="cats-chips"><span class="cat-chip" style="color:#5b9bff;background:rgba(91,155,255,0.1);border-color:rgba(91,155,255,0.35)">Q2 2024 Earnings Report (estimated late August)</span></div>
-      <div class="risk-line"><span class="risk-icon">⚠</span> Chinese regulatory risk to edtech remains unresolved; any adverse policy announcement or continued competitive erosion could quickly invalidate the CEO's confidence thesis and trigger a sharp reversal.</div>
-    </div>
-
-  </div>
-</article>
-<article class="card" style="--ac:#fbbf24">
-  <div class="card-stripe"></div>
-  <div class="card-body">
-
-    <div class="col-id">
-      <div class="ci-header">
-        <span class="card-rank">#2</span>
-        <span class="card-ticker">SAGT</span>
-        <span class="sent s-bull">BULLISH</span>
-      </div>
-      <div class="card-co">Sagtec Global Ltd</div>
-      <div class="b1-meta"><span class="meta-role">CEO</span> <span class="meta-date">Trade 2026-06-18</span></div>
-      <div class="ci-buyprice">
-        <span class="px-buy">$1.04</span>
-        <span class="px-buy-lbl">buy price</span>
-      </div>
-      <div class="b2-sub">$1.6M total · Δ own +22%</div>
-    </div>
-
-    <div class="col-score">
-      <div class="ring-outer" data-score="41.0" data-color="#fbbf24">
-  <div class="ring-track"></div>
-  <div class="ring-fill"></div>
-  <div class="ring-text">
-    <span class="ring-num" style="color:#fbbf24">41</span>
-    <span class="ring-den">/100</span>
-    <span class="ring-lbl" style="color:#fbbf24">WATCH</span>
-  </div>
-</div>
-      
-      <div class="b2-tech">
-        <div class="tc"><span class="tk">EMA50</span><span class="tv" style="color:#ff4757">-19.5%</span></div>
-        <div class="tc"><span class="tk">EMA200</span><span class="tv" style="color:#ff4757">-41.2%</span></div>
-        <div class="tc"><span class="tk">Vel 5d</span><span class="tv" style="color:#00ffd4">+15.8%</span></div>
-        <div class="tc"><span class="tk">Short</span><span class="tv">3.8%</span></div>
-      </div>
-    </div>
-
-    <div class="col-news">
-      <div class="news-line"><span class="news-hl">"Sagtec Global CEO Buys $1.56 Million in Stock, Signaling Strong Confidence"</span></div>
-      <p class="news-body">Sagtec Global Ltd's CEO recently made a substantial insider purchase, acquiring $1.56 million worth of company shares at $1.04 each on June 18, 2026. This significant investment by the chief executive is widely seen as a strong indicator of management's belief in the company's intrinsic value and future growth potential. Such a large buy often signals confidence to the market, potentially boosting investor sentiment.</p>
-    </div>
-
-    <div class="col-cats">
-      <div class="cats-lbl">CATALYSTS</div>
-      <div class="cats-chips"><span class="no-cats">No near-term catalysts</span></div>
-      <div class="risk-line"><span class="risk-icon">⚠</span> CEO insider buy may reflect personal liquidity needs or optimism disconnected from fundamentals; stock's 41% underperformance to 200-day MA and lack of identified catalysts suggest structural headwinds that an insider purchase alone cannot overcome.</div>
+      <div class="cats-chips"><span class="cat-chip" style="color:#5b9bff;background:rgba(91,155,255,0.1);border-color:rgba(91,155,255,0.35)">Q2 earnings ~late August</span></div>
+      <div class="risk-line"><span class="risk-icon">⚠</span> Gaotu operates in a structurally challenged online education market facing regulatory pressure in China and declining student enrollments—a single profitable quarter does not validate long-term viability, and the stock could easily revert to losses if macro conditions deteriorate or competition intensifies.</div>
     </div>
 
   </div>
@@ -436,9 +389,9 @@ footer{
 
     <div class="col-id">
       <div class="ci-header">
-        <span class="card-rank">#3</span>
+        <span class="card-rank">#2</span>
         <span class="card-ticker">FISV</span>
-        <span class="sent s-neut">NEUTRAL</span>
+        <span class="sent s-bull">BULLISH</span>
       </div>
       <div class="card-co">Fiserv Inc</div>
       <div class="b1-meta"><span class="meta-role">CFO</span> <span class="meta-date">Trade 2026-06-17</span></div>
@@ -450,11 +403,11 @@ footer{
     </div>
 
     <div class="col-score">
-      <div class="ring-outer" data-score="34.0" data-color="#ff6b35">
+      <div class="ring-outer" data-score="39.0" data-color="#ff6b35">
   <div class="ring-track"></div>
   <div class="ring-fill"></div>
   <div class="ring-text">
-    <span class="ring-num" style="color:#ff6b35">34</span>
+    <span class="ring-num" style="color:#ff6b35">39</span>
     <span class="ring-den">/100</span>
     <span class="ring-lbl" style="color:#ff6b35">WEAK</span>
   </div>
@@ -469,14 +422,65 @@ footer{
     </div>
 
     <div class="col-news">
-      <div class="news-line"><span class="news-hl">"Fiserv to Present at Upcoming Investor Conferences"</span> <a href="https://www.businesswire.com/news/home/20240610335039/en/Fiserv-to-Present-at-Upcoming-Investor-Conferences" target="_blank" class="src-a">↗1</a></div>
-      <p class="news-body">Fiserv recently announced its participation in several investor conferences, including the Evercore ISI Payments & FinTech Innovators Forum on June 11 and the Piper Sandler Global Exchange & FinTech Conference on June 12. These events provided management with platforms to discuss the company's strategic initiatives and financial performance, offering investors insights into its current operations and future outlook. No major new announcements or significant shifts in guidance were reported from these presentations.</p>
+      <div class="news-line"><span class="news-hl">"Fiserv CFO Buys Nearly $500K in Company Stock, Signaling Strong Confidence"</span> <a href="https://www.nasdaq.com/market-activity/stocks/fisv/insider-trades" target="_blank" class="src-a">↗1</a><a href="https://investors.fiserv.com/news-releases/news-release-details/fiserv-present-baird-global-consumer-technology-services" target="_blank" class="src-a">↗2</a></div>
+      <p class="news-body">Fiserv's Chief Financial Officer, Robert Hau, recently made a significant open market purchase of company stock, acquiring approximately $500,000 worth at $49.70 per share. This substantial insider transaction is typically viewed as a strong bullish signal, indicating management's belief in the company's current valuation and future growth prospects. The company also recently presented at the Baird Global Consumer, Technology & Services Conference, providing an opportunity to update investors on its strategy.</p>
     </div>
 
     <div class="col-cats">
       <div class="cats-lbl">CATALYSTS</div>
-      <div class="cats-chips"><span class="cat-chip" style="color:#5b9bff;background:rgba(91,155,255,0.1);border-color:rgba(91,155,255,0.35)">Q2 2024 Earnings (late July/early August)</span></div>
-      <div class="risk-line"><span class="risk-icon">⚠</span> Stock is down 14% from EMA50 and short-float is low; if earnings miss or provide weak guidance, the CFO purchase could face immediate mark-to-market pressure with limited near-term upside catalyst.</div>
+      <div class="cats-chips"><span class="cat-chip" style="color:#5b9bff;background:rgba(91,155,255,0.1);border-color:rgba(91,155,255,0.35)">Q2 earnings ~July 24</span></div>
+      <div class="risk-line"><span class="risk-icon">⚠</span> CFO buy of $500K is meaningful but not exceptional in absolute size relative to FISV's $40B+ market cap, and the -14% pullback vs. EMA50 may reflect near-term technical weakness that persists despite insider confidence.</div>
+    </div>
+
+  </div>
+</article>
+<article class="card" style="--ac:#ff6b35">
+  <div class="card-stripe"></div>
+  <div class="card-body">
+
+    <div class="col-id">
+      <div class="ci-header">
+        <span class="card-rank">#3</span>
+        <span class="card-ticker">SAGT</span>
+        <span class="sent s-neut">NEUTRAL</span>
+      </div>
+      <div class="card-co">Sagtec Global Ltd</div>
+      <div class="b1-meta"><span class="meta-role">CEO</span> <span class="meta-date">Trade 2026-06-18</span></div>
+      <div class="ci-buyprice">
+        <span class="px-buy">$1.04</span>
+        <span class="px-buy-lbl">buy price</span>
+      </div>
+      <div class="b2-sub">$1.6M total · Δ own +22%</div>
+    </div>
+
+    <div class="col-score">
+      <div class="ring-outer" data-score="36.0" data-color="#ff6b35">
+  <div class="ring-track"></div>
+  <div class="ring-fill"></div>
+  <div class="ring-text">
+    <span class="ring-num" style="color:#ff6b35">36</span>
+    <span class="ring-den">/100</span>
+    <span class="ring-lbl" style="color:#ff6b35">WEAK</span>
+  </div>
+</div>
+      
+      <div class="b2-tech">
+        <div class="tc"><span class="tk">EMA50</span><span class="tv" style="color:#ff4757">-19.5%</span></div>
+        <div class="tc"><span class="tk">EMA200</span><span class="tv" style="color:#ff4757">-41.2%</span></div>
+        <div class="tc"><span class="tk">Vel 5d</span><span class="tv" style="color:#00ffd4">+15.8%</span></div>
+        <div class="tc"><span class="tk">Short</span><span class="tv">3.8%</span></div>
+      </div>
+    </div>
+
+    <div class="col-news">
+      <div class="news-line"><span class="news-hl">"No Recent Public News Found for Sagtec Global Ltd (SAGT)"</span></div>
+      <p class="news-body">A comprehensive search for recent public news or press releases concerning Sagtec Global Ltd (SAGT) over the past 14 days yielded no results. While the company's CEO reportedly made a significant insider purchase on 2026-06-18, this event is in the future and not reflected in current news cycles. Without recent developments, there is no immediate market-moving information available.</p>
+    </div>
+
+    <div class="col-cats">
+      <div class="cats-lbl">CATALYSTS</div>
+      <div class="cats-chips"><span class="no-cats">No near-term catalysts</span></div>
+      <div class="risk-line"><span class="risk-icon">⚠</span> Complete lack of public information, analyst coverage, or catalysts makes this a speculative micro-cap play with high liquidity and fundamental opacity risk; CEO buy could reflect desperation rather than conviction.</div>
     </div>
 
   </div>
@@ -520,14 +524,14 @@ footer{
     </div>
 
     <div class="col-news">
-      <div class="news-line"><span class="news-hl">"No Recent Public Market News for 51Talk Online Education Group (COE)"</span></div>
-      <p class="news-body">51Talk Online Education Group (COE) completed its going-private transaction and delisted from the NYSE in December 2023. As a private entity, there is no publicly available stock-related news or trading activity within the last 14 days. The provided insider buy context for 2026-05-22 is not applicable to a publicly traded company.</p>
+      <div class="news-line"><span class="news-hl">"51Talk Online Education Group (COE) Delisted, No Recent Public Market News"</span> <a href="https://www.prnewswire.com/news-releases/51talk-online-education-group-announces-completion-of-privatization-301898748.html" target="_blank" class="src-a">↗1</a></div>
+      <p class="news-body">51Talk Online Education Group (COE) completed its privatization and delisted from the NYSE in August 2023. As a result, there has been no public market news or stock-related developments for the company in the last 14 days. The provided insider buy context refers to a future date and a company no longer publicly traded.</p>
     </div>
 
     <div class="col-cats">
       <div class="cats-lbl">CATALYSTS</div>
       <div class="cats-chips"><span class="no-cats">No near-term catalysts</span></div>
-      <div class="risk-line"><span class="risk-icon">⚠</span> The insider buy event and 2026-05-22 date appear erroneous—COE delisted in December 2023 and cannot have public insider trades or stock price context as a private company.</div>
+      <div class="risk-line"><span class="risk-icon">⚠</span> Stock is no longer publicly tradable; insider buy signal is invalid for public market investors and may reflect data error or private equity restructuring unrelated to equity valuation.</div>
     </div>
 
   </div>
@@ -542,7 +546,7 @@ footer{
       <span class="h-alerted today-chip">TODAY</span>
       <span class="htk" style="color:#fbbf24">GOTU</span>
       <span class="hsi" style="color:#fbbf24">WATCH</span>
-      <span class="hsc">46</span>
+      <span class="hsc">52</span>
       
     </div>
     <div class="hrow-meta">
@@ -579,40 +583,13 @@ footer{
   <span class="br-val">$447K</span>
   <span class="br-dow">+3%</span>
 </div></div>
-</div><div class="hrow" style="border-left-color:#fbbf24">
-  <div class="hrow-hdr">
-    <div class="hrl-l">
-      <span class="h-alerted today-chip">TODAY</span>
-      <span class="htk" style="color:#fbbf24">SAGT</span>
-      <span class="hsi" style="color:#fbbf24">WATCH</span>
-      <span class="hsc">41</span>
-      
-    </div>
-    <div class="hrow-meta">
-      <span class="hm-v">$1.6M total · 1 buy</span>
-      <span class="hm-d">Trade: 2026-06-18</span>
-    </div>
-    <div class="hrow-rets"><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">3d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">8d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">15d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">30d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">90d</span></div></div>
-  </div>
-  <div class="hrow-buys"><div class="buy-hdr">
-  <span>DATE</span><span>INSIDER</span><span>ROLE</span>
-  <span>PRICE</span><span>SHARES</span><span>VALUE</span><span>ΔOWN</span>
-</div><div class="buy-row">
-  <span class="br-date">2026-06-18</span>
-  <span class="br-name">Ng Chen Lok</span>
-  <span class="br-role">CEO</span>
-  <span class="br-px">$1.04</span>
-  <span class="br-qty">1,500,000 sh</span>
-  <span class="br-val">$1.6M</span>
-  <span class="br-dow">+22%</span>
-</div></div>
 </div><div class="hrow" style="border-left-color:#ff6b35">
   <div class="hrow-hdr">
     <div class="hrl-l">
       <span class="h-alerted today-chip">TODAY</span>
       <span class="htk" style="color:#ff6b35">FISV</span>
       <span class="hsi" style="color:#ff6b35">WEAK</span>
-      <span class="hsc">34</span>
+      <span class="hsc">39</span>
       
     </div>
     <div class="hrow-meta">
@@ -632,6 +609,33 @@ footer{
   <span class="br-qty">10,060 sh</span>
   <span class="br-val">$500K</span>
   <span class="br-dow">+6%</span>
+</div></div>
+</div><div class="hrow" style="border-left-color:#ff6b35">
+  <div class="hrow-hdr">
+    <div class="hrl-l">
+      <span class="h-alerted today-chip">TODAY</span>
+      <span class="htk" style="color:#ff6b35">SAGT</span>
+      <span class="hsi" style="color:#ff6b35">WEAK</span>
+      <span class="hsc">36</span>
+      
+    </div>
+    <div class="hrow-meta">
+      <span class="hm-v">$1.6M total · 1 buy</span>
+      <span class="hm-d">Trade: 2026-06-18</span>
+    </div>
+    <div class="hrow-rets"><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">3d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">8d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">15d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">30d</span></div><div class="h-ret"><span class="h-ret-val" style="color:var(--muted)">—</span><span class="h-ret-lbl">90d</span></div></div>
+  </div>
+  <div class="hrow-buys"><div class="buy-hdr">
+  <span>DATE</span><span>INSIDER</span><span>ROLE</span>
+  <span>PRICE</span><span>SHARES</span><span>VALUE</span><span>ΔOWN</span>
+</div><div class="buy-row">
+  <span class="br-date">2026-06-18</span>
+  <span class="br-name">Ng Chen Lok</span>
+  <span class="br-role">CEO</span>
+  <span class="br-px">$1.04</span>
+  <span class="br-qty">1,500,000 sh</span>
+  <span class="br-val">$1.6M</span>
+  <span class="br-dow">+22%</span>
 </div></div>
 </div><div class="hrow" style="border-left-color:#ff6b35">
   <div class="hrow-hdr">
@@ -1312,23 +1316,23 @@ footer{
     </tr></thead>
     <tbody><tr>
   <td class="td-m">2026-06-19</td>
-  <td><b style="color:#ff6b35">FISV</b></td>
+  <td><b style="color:#ff6b35">SAGT</b></td>
   <td style="color:#ff6b35">WEAK</td>
-  <td style="color:#ff6b35;font-weight:700">34</td>
-  <td>—</td>
-  <td class="td-m">1 buy</td>
-  <td class="td-m">$49.70</td>
-  <td class="td-m">$47.86</td>
-  <td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td>
-</tr><tr>
-  <td class="td-m">2026-06-19</td>
-  <td><b style="color:#fbbf24">SAGT</b></td>
-  <td style="color:#fbbf24">WATCH</td>
-  <td style="color:#fbbf24;font-weight:700">41</td>
+  <td style="color:#ff6b35;font-weight:700">36</td>
   <td>—</td>
   <td class="td-m">1 buy</td>
   <td class="td-m">$1.04</td>
   <td class="td-m">$1.12</td>
+  <td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td>
+</tr><tr>
+  <td class="td-m">2026-06-19</td>
+  <td><b style="color:#ff6b35">FISV</b></td>
+  <td style="color:#ff6b35">WEAK</td>
+  <td style="color:#ff6b35;font-weight:700">39</td>
+  <td>—</td>
+  <td class="td-m">1 buy</td>
+  <td class="td-m">$49.70</td>
+  <td class="td-m">$47.86</td>
   <td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td>
 </tr><tr>
   <td class="td-m">2026-06-18</td>
@@ -1502,16 +1506,6 @@ footer{
   <td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td>
 </tr><tr>
   <td class="td-m">2026-06-14</td>
-  <td><b style="color:#fbbf24">GOTU</b></td>
-  <td style="color:#fbbf24">WATCH</td>
-  <td style="color:#fbbf24;font-weight:700">46</td>
-  <td>—</td>
-  <td class="td-m">3 buys</td>
-  <td class="td-m">$2.24</td>
-  <td class="td-m">$1.67</td>
-  <td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td>
-</tr><tr>
-  <td class="td-m">2026-06-14</td>
   <td><b style="color:#fbbf24">COSM</b></td>
   <td style="color:#fbbf24">WATCH</td>
   <td style="color:#fbbf24;font-weight:700">47</td>
@@ -1532,6 +1526,16 @@ footer{
   <td style="color:#ff4757;font-weight:600">-21.4%</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td>
 </tr><tr>
   <td class="td-m">2026-06-14</td>
+  <td><b style="color:#fbbf24">GOTU</b></td>
+  <td style="color:#fbbf24">WATCH</td>
+  <td style="color:#fbbf24;font-weight:700">52</td>
+  <td>—</td>
+  <td class="td-m">3 buys</td>
+  <td class="td-m">$2.24</td>
+  <td class="td-m">$1.67</td>
+  <td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td><td style="color:var(--muted);font-weight:600">—</td>
+</tr><tr>
+  <td class="td-m">2026-06-14</td>
   <td><b style="color:#2979ff">SMMT</b></td>
   <td style="color:#2979ff">BUY</td>
   <td style="color:#2979ff;font-weight:700">74</td>
@@ -1545,11 +1549,16 @@ footer{
 </div>
 </div>
 
+<div id="t-filtered" class="pane">
+  <div class="sec">RVol &ge; 1.5x + Inside 50/200 EMA Band &plusmn;0.25SD &middot; Most Recent Closed Bar</div>
+  <div class="empty">No tickers currently meet the RVol + EMA-band filter.</div>
+</div>
+
 </main>
 
 <footer>
   <span>INSIDER TRACKER — informational only · not financial advice</span>
-  <span>Generated 2026-06-20 13:40 MST</span>
+  <span>Generated 2026-06-20 14:24 MST</span>
 </footer>
 
 </div>
