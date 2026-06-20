@@ -43,11 +43,16 @@ Add these 5 secrets (exact names must match):
 
 | Secret name | Value |
 |-------------|-------|
-| `ALPACA_API_KEY` | `PKHKFDI2FTO6QEFVOF2X7MEDHF` |
-| `ALPACA_API_SECRET` | `EUZ4ccvf3gtgaeW1PSuWUDQCi4k23jXkJNExyx1KF2Zv` |
-| `POLYGON_API_KEY` | `LXNy07eA1YCLjfGaeblfo_5MsDH12vKR` |
-| `GEMINI_API_KEY` | `AQ.Ab8RN6IlO4UtQdtxynvJqWGPEWMJnY-xTI5ntICN0-HH8A8naw` |
-| `ANTHROPIC_API_KEY` | `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` |
+| `ALPACA_API_KEY` | *(from your Alpaca dashboard → API Keys)* |
+| `ALPACA_API_SECRET` | *(paired secret shown alongside the Alpaca API key)* |
+| `POLYGON_API_KEY` | *(from your Polygon.io dashboard → API Keys)* |
+| `GEMINI_API_KEY` | *(from Google AI Studio → Get API key)* |
+| `ANTHROPIC_API_KEY` | *(from console.anthropic.com → API Keys)* |
+
+> **Security note:** real key values used to be pasted directly into this file. They've been
+> removed since this doc lives in the repo and anyone with read access could see them. If you
+> haven't already, rotate (regenerate) all five keys at their respective providers — the old
+> values are still visible in this repo's git history even after this edit.
 
 ---
 
@@ -75,17 +80,4 @@ Add these 5 secrets (exact names must match):
 ## After setup
 
 The pipeline runs automatically every weekday at 9:30 AM ET.
-You don't need to do anything — just check your dashboard URL whenever you want.
-
-To trigger an extra run manually: **Actions** → **Daily Insider Tracker** → **Run workflow**.
-
----
-
-## Syncing local ↔ GitHub
-
-After each Actions run, the DB and HTML are committed to the repo.
-To pull those changes locally:
-```powershell
-cd C:\Users\jjami\OneDrive\Desktop\Insider_Tracker
-git pull
-```
+You don't need to do anything — just check your dashboard URL whenever you want
