@@ -407,6 +407,41 @@ def _perf(picks):
   </table>
 </div>"""
 
+# ── filtered tab (RVol + EMA-band screen) — additive, does not touch _card/_history/_perf ──
+
+def _filtered(signals):
+    if not signals:
+        return '<div class="empty">No tickers currently meet the RVol + EMA-band filter.</div>'
+
+    rows = ""
+    for s in sorted(signals, key=lambda x: -(x.get("rvol") or 0)):
+        ctrl  = s.get("control", "neutral")
+        ccol  = {"buyer": "#00ffd4", "seller": "#ff4757"}.get(ctrl, "var(--muted)")
+        clbl  = {"buyer": "Buyers in Control", "seller": "Sellers in Control"}.get(ctrl, "Neutral")
+        bands = s.get("bands", {})
+        band_tags = "".join(
+            f'<span class="fband">EMA{p}</span>'
+            for p, b in bands.items() if b.get("inside")
+        )
+        rows += f"""<tr>
+  <td><b>{s.get("ticker","")}</b></td>
+  <td class="td-m">{s.get("company","")}</td>
+  <td class="td-m">${s.get("close",0):.2f}</td>
+  <td style="color:{ccol};font-weight:700">{s.get("rvol",0):.2f}x</td>
+  <td style="color:{ccol}">{clbl}</td>
+  <td>{band_tags}</td>
+  <td class="td-m">{s.get("bar_date","")}</td>
+</tr>"""
+
+    return f"""<div class="ptw">
+  <table class="ptbl">
+    <thead><tr>
+      <th>TICKER</th><th>COMPANY</th><th>CLOSE</th><th>RVOL</th><th>CONTROL</th><th>BAND</th><th>BAR DATE</th>
+    </tr></thead>
+    <tbody>{rows}</tbody>
+  </table>
+</div>"""
+
 # ── CSS ────────────────────────────────────────────────────────────────────────
 
 CSS = """
@@ -699,6 +734,9 @@ footer{
   .card-metrics{grid-template-columns:repeat(2,1fr)}
   .hrl-r{display:none}
 }
+
+/* ── Filtered tab (additive — new rule only, nothing above touched) ── */
+.fband{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--amber);background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);border-radius:4px;padding:2px 7px;margin-right:4px}
 """
 
 JS = """
@@ -753,7 +791,8 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 
 # ── generate ───────────────────────────────────────────────────────────────────
 
-def generate_html(events, all_picks):
+def generate_html(events, all_picks, filtered=None):
+    filtered = filtered or []
     now = _az_now()
 
     seen = {}
@@ -805,6 +844,7 @@ def generate_html(events, all_picks):
   <button class="tab-btn active" data-tab="t-today">Today's Picks</button>
   <button class="tab-btn" data-tab="t-history">History</button>
   <button class="tab-btn" data-tab="t-perf">Performance</button>
+  <button class="tab-btn" data-tab="t-filtered">Filtered</button>
 </nav>
 
 <main>
@@ -825,6 +865,11 @@ def generate_html(events, all_picks):
   {_perf(all_picks)}
 </div>
 
+<div id="t-filtered" class="pane">
+  <div class="sec">RVol &ge; 1.5x + Inside 50/200 EMA Band &plusmn;0.25SD &middot; Most Recent Closed Bar</div>
+  {_filtered(filtered)}
+</div>
+
 </main>
 
 <footer>
@@ -838,10 +883,10 @@ def generate_html(events, all_picks):
 </html>"""
 
 
-def write_html(events, all_picks, path=None):
+def write_html(events, all_picks, filtered=None, path=None):
     if path is None:
         path = DOCS_DIR / "index.html"
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(generate_html(events, all_picks), encoding="utf-8")
+    path.write_text(generate_html(events, all_picks, filtered), encoding="utf-8")
     return path

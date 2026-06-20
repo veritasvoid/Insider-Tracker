@@ -190,7 +190,26 @@ def run(
     except Exception as _e:
         print(f"[output] WARN  track/load_all_picks failed ({_e}); using empty history")
         all_picks = []
-    html_path = write_html(events, all_picks)
+
+    # Optional technical screen (RVol + EMA-band) — purely additive, feeds the
+    # "Filtered" tab only. Never blocks the pipeline if it fails.
+    try:
+        from filters import run as filters_run
+        universe = sorted({e["ticker"] for e in events} |
+                           {p.get("ticker") for p in all_picks if p.get("ticker")})
+        filtered_signals = filters_run(universe, config_path=config_path)
+        company_by_ticker = {}
+        for e in events:
+            company_by_ticker.setdefault(e["ticker"], e.get("company"))
+        for p in all_picks:
+            company_by_ticker.setdefault(p.get("ticker"), p.get("company"))
+        for f in filtered_signals:
+            f["company"] = company_by_ticker.get(f["ticker"], "")
+    except Exception as _e:
+        print(f"[output] WARN  filters.run failed ({_e}); Filtered tab will be empty")
+        filtered_signals = []
+
+    html_path = write_html(events, all_picks, filtered=filtered_signals)
     print(f"[output] HTML  → {html_path}")
 
     return j_path, md_path
